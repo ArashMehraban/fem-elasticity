@@ -56,7 +56,7 @@ for i=5:5:60
 end
 figure
 loglog(h,err,'r-o',h,0.001*h,'b:',h, 0.1*(h.^2),'b--');
-xlabel('log(h) where h is sqrt(sum(element sides squared))')
-ylabel('log(error)')
-legend('FEM','y=x','y=2x','Location','northwest')
+xlabel('h = sqrt(sum(element sides squared))')
+ylabel('error')
+legend('FEM','O(h)','O(h^2)','Location','northwest')
 
