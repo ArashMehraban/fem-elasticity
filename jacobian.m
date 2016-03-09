@@ -1,27 +1,53 @@
-function  [all_dets, Je_all_gauss_pts] = jacobian(elem_vtx_coords, D1, D0)
+function  [all_dets, invJe] = jacobian(elem_vtx_coords, D0, D1, varargin)
+  %2D
+  if(nargin == 3 )  
+      %interleaving D0 and D1 
+      D0D1 = interleaveMat(D0,D1) ;
 
-  %interleaving D1 and D0 
-  nColumns = size(D1,2);
-  D1D0 = [D1,D0]'; 
-  D1D0 = reshape(D1D0(:),nColumns,[])'; 
+      %Calculate the Jacobian for all Guass points 
+      Je= D0D1*elem_vtx_coords;
+      
+      %get number of rows for D0D1
+      nrow = size(D0D1,1);
+  end
   
-  %Calculate the Jacobian for all Guass points by multiplying
-  %each element_vtx_coords by derivatives wrt D1, D0 
-  Je_all_gauss_pts= D1D0*elem_vtx_coords;
-  
-  %get the number of Guass points = number of determinants
-  num_gs_pts = sqrt(size(D0,1));
-  
-  
-  %Allocate space for all determinants
-  all_dets = zeros(1,num_gs_pts);
-  %Populate the matrix of all determinanats
-  j=1;
-  for i=1:num_gs_pts:size(D1D0,1)
-      jdet = det(Je_all_gauss_pts(i:i+num_gs_pts-1,:));
-      all_dets(j) = jdet;
-      j=j+1;
+  %3D
+  if(nargin == 4) 
+      D2 = varargin{1};
+      %interleaving D0, D1 and D2
+      D0D1D2 = interleaveMat(D0,D1,D2) ;
+      
+      %Calculate the Jacobian for all Guass points
+      Je= D0D1D2*elem_vtx_coords;
+      
+      %get number of rows for D0D1
+      nrow = size(D0D1D2,1);
   end
 
-end
+      %get number of determinants = number of Guass points. 
+      num_gs_pts = size(D0,1);      
+      
+      blocksz = nrow/num_gs_pts;
+
+      %Allocate space for all determinants
+      all_dets = zeros(1,num_gs_pts);
+      %Populate the matrix of all determinanats
+      %Populate the matrix of all Jacobian inverse
+      inJe = cell(1,num_gs_pts);
+      
+      j=1;
+      for i=1:blocksz:nrow
+          temp = Je(i:i+blocksz-1,:);
+          jdet = det(temp);
+          if(jdet < 0)
+              error('Defective element! Negative determinant in Jacobian');
+          end
+          all_dets(j) = jdet;
+          invTemp = inv(temp);
+          inJe{j} = invTemp;
+          j=j+1;
+      end
+      invJe = cell2mat(inJe);
+end  
+
 
