@@ -40,6 +40,9 @@ for i=5:5:10
     while(global_res_norm > 1.0e-4)
         global_res = eval_res(u, conn,vtx_coords, elm_type);
         global_res_norm = norm(global_res);
+        if(global_res_norm < 1.0e-4)
+            break;
+        end
         sol = fsolve(@(u)eval_res(u ,conn, vtx_coords, elm_type  ),global_res);
         u=sol;
     end  
