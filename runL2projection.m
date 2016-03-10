@@ -8,17 +8,17 @@ format short
 j=1;
 err=zeros(1,12);
 h = zeros(1,12);
-for i=5:5:5
-    % User given parameters to create 2D mesh with quadliteral elements
+for i=5:5:60
+    % User given parameters to generate mesh with quadliteral elements
     nx=i;
     ny=i+1;
     nz=i+2; 
-    x0 = 0;
-    y0 = 0;
-    z0 = 0;
-    x1 = 1;
-    y1 = 1;
-    z1 = 1;
+    x0 = -pi/2;
+    y0 = -pi/2;
+    z0 = -pi/2;
+    x1 = pi/2;
+    y1 = pi/2;
+    z1 = pi/2;
     elm_type = 'Q4';
     
    
@@ -35,13 +35,18 @@ for i=5:5:5
     u_sz = size(vtx_coords,1);
     % solution vector
     u = zeros(1,u_sz)';
-      
-    % get global residual from FEM
-    global_res = eval_res(conn,vtx_coords, u, elm_type);
-      
-      %while(global_res > 1.0e-4)
-       % sol = fsolve(@eval_res,global_res);
-      %end      
+    global_res = u;
+    global_res_norm=1;
+    while(global_res_norm > 1.0e-4)
+        global_res = eval_res(u, conn,vtx_coords, elm_type);
+        global_res_norm = norm(global_res);
+        sol = fsolve(@(u)eval_res(u ,conn, vtx_coords, elm_type  ),global_res);
+        u=sol;
+    end  
+     
+    fem_sol = sol;
+    
+    exactSol = exactf(vtx_coords);
         
     % element size (hsz)
     if (strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9') )                         
@@ -51,15 +56,15 @@ for i=5:5:5
         hsz = sqrt(((y1-y0)/(i+2))^2+(x1-x0)/i^2+(z1-z0)/i^2);
     end
 
-%     %calculate the error norm
-%     error = norm(exact_f - sol)/norm(sol);
-%     err(j) =error;
-%     h(j) = hsize;
-%     j=j+1;
+    %calculate the error norm
+    error = norm(exactSol - fem_sol)/norm(fem_sol);
+    err(j) =error;
+    h(j) = hsz;
+    j=j+1;
     
 end
-% figure
-% loglog(h,err,'r-o',h,0.001*h,'b:',h, 0.1*(h.^2),'b--');
-% xlabel('h = sqrt(sum(element sides squared))')
-% ylabel('error')
-% legend('FEM','O(h)','O(h^2)','Location','northwest')
+figure
+loglog(h,err,'r-o',h,0.001*h,'b:',h, 0.1*(h.^2),'b--');
+xlabel('h = sqrt(sum(element sides squared))')
+ylabel('error')
+legend('FEM','O(h)','O(h^2)','Location','northwest')

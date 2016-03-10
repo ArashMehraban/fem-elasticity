@@ -1,4 +1,4 @@
-function global_res = eval_res(conn, vtx_coords, u, elm_type)
+function global_res = eval_res(u ,conn, vtx_coords, elm_type)
 %
 %  input: conn: mesh connectivity matrix 
 %       : vtx_coords: mesh nodes veterx-coordinates 
