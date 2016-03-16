@@ -8,10 +8,10 @@ format short
 j=1;
 err=zeros(1,12);
 h = zeros(1,12);
-for i=5:5:10
+for i=10:10:10
     % User given parameters to generate mesh with quadliteral elements
     nx=i;
-    ny=i+1;
+    ny=i;
     nz=i+2; 
     x0 = -pi/2;
     y0 = -pi/2;
@@ -20,6 +20,7 @@ for i=5:5:10
     y1 = pi/2;
     z1 = pi/2;
     elm_type = 'Q4';
+
     
    
     % generate 2D mesh based on element type
@@ -37,13 +38,18 @@ for i=5:5:10
     u = zeros(1,u_sz)';
     
     global_res_norm=1;
-    while(global_res_norm > 1.0e-4)
-        global_res = eval_res(u, conn,vtx_coords, elm_type);
+    while(global_res_norm > 1.0e-6)
+        [global_res, jac] = eval_res(u, conn,vtx_coords, elm_type);
+        
         global_res_norm = norm(global_res);
-        if(global_res_norm < 1.0e-4)
+        if(global_res_norm < 1.0e-6)
             break;
         end
-        sol = fsolve(@(u)eval_res(u ,conn, vtx_coords, elm_type  ),global_res);
+        fun = @(u)eval_res(u, conn, vtx_coords, elm_type);
+        %options = optimoptions(@fsolve,'Display','iter',...
+        %options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
+        options = optimset('Jacobian','on');
+        sol = fsolve(fun, global_res, options);
         u=sol;
     end  
      
@@ -70,4 +76,4 @@ figure
 loglog(h,err,'r-o',h,0.001*h,'b:',h, 0.1*(h.^2),'b--');
 xlabel('h = sqrt(sum(element sides squared))')
 ylabel('error')
-legend('FEM-Hex8','O(h)','O(h^2)','Location','northwest')
+legend('FEM-Q4','O(h)','O(h^2)','Location','northwest')

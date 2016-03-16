@@ -1,4 +1,4 @@
-function global_res = eval_res(u ,conn, vtx_coords, elm_type)
+function [global_res , jac]= eval_res(u ,conn, vtx_coords, elm_type)
 %
 %  input: conn: mesh connectivity matrix 
 %       : vtx_coords: mesh nodes veterx-coordinates 
@@ -18,8 +18,9 @@ function global_res = eval_res(u ,conn, vtx_coords, elm_type)
     
     %Allocate space for global residual
     global_res =zeros(1,num_nodes)';
+    jac = zeros(num_nodes,num_nodes);
 
-    for i=1:nel    
+    %for i=1:nel    
                  
          % Be: shape/basis functions at quadrature points for each element         
          % D0e: Derivative of shape functions with respect to xi for each element
@@ -34,6 +35,8 @@ function global_res = eval_res(u ,conn, vtx_coords, elm_type)
               [W_hat_e, Be, D0e, D1e, D2e] = get_shape(elm_type);
           end
          
+     for i=1:nel  
+          
          %get corresponding vertex coordinates for each element 
          element_vtx_coords = vtx_coords(conn(i,:),:);
          %get corresponding unknown/solution u for each element
@@ -59,10 +62,11 @@ function global_res = eval_res(u ,conn, vtx_coords, elm_type)
          
          mp_qd_pts= Be*element_vtx_coords;
          
-         [f0,f1] = userf(ue, grad_ue,mp_qd_pts);  
-         
+        [f0,f1,f00, f01, f10, f11] = userf(ue, grad_ue,mp_qd_pts); 
+                 
          %get Gauss weights for the current element
          We = W_hat_e.*dets';
+         
          
          De_res = 0;
          for j=1:size(Die,2)
@@ -72,7 +76,8 @@ function global_res = eval_res(u ,conn, vtx_coords, elm_type)
                
          % element residual evaluation
          res_e = Be'*We.*f0 + De_res;
-                  
+         
+         
          % global residual assembly
          temp=conn(i,:)';
          for k=1:neldof
@@ -80,6 +85,42 @@ function global_res = eval_res(u ,conn, vtx_coords, elm_type)
              if kk>0
                  global_res(kk)=global_res(kk)+res_e(k);
              end
-         end              
-    end
+         end
+         
+         %element jac_e constituents
+         f0u = Be'*diag(We.*f00)*Be;
+         
+         f10TD =0;
+         for j=size(Die,2) 
+            f10TD = f10TD + diag(f10{j})*Die{j};
+         end
+         f0gu = Be'*diag(We)*f10TD;
+         
+         f1u = 0;
+         for j=size(Die,2) 
+            f1u = f1u + Die{j}'*diag(We.*f01{j})*Be;
+         end
+         
+         f1gu = 0;
+         for j=1:size(Die,2)
+            f1gu = f1gu + Die{j}'* diag(We.*f11{j})*Die{j}; 
+         end
+         
+         % element consistant tnagent evaulation (jac_e)
+         jac_e = f0u + f0gu + f1u + f0gu;         
+                         
+         % global consistent tangent/jacobian assembly
+         tempj=conn(i,:)';
+         for k=1:neldof
+             kk=tempj(k);
+             if kk>0
+                 for j=1:neldof
+                     J=tempj(j);
+                     if J>0
+                         jac(kk,J)=jac(kk,J)+jac_e(k,j);
+                     end
+                 end
+             end
+         end          
+     end
 end
