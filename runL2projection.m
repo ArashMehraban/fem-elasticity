@@ -8,7 +8,7 @@ format short
 j=1;
 err=zeros(1,12);
 h = zeros(1,12);
-for i=10:10:10
+for i=15:15:15
     % User given parameters to generate mesh with quadliteral elements
     nx=i;
     ny=i;
@@ -38,11 +38,11 @@ for i=10:10:10
     u = zeros(1,u_sz)';
     
     global_res_norm=1;
-    while(global_res_norm > 1.0e-6)
+    while(global_res_norm > 1.0e-4)
         [global_res, jac] = eval_res(u, conn,vtx_coords, elm_type);
-        
+                
         global_res_norm = norm(global_res);
-        if(global_res_norm < 1.0e-6)
+        if(global_res_norm < 1.0e-4)
             break;
         end
         fun = @(u)eval_res(u, conn, vtx_coords, elm_type);

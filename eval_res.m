@@ -1,4 +1,4 @@
-function [global_res , jac]= eval_res(u ,conn, vtx_coords, elm_type)
+function [global_res , jac] = eval_res(u ,conn, vtx_coords, elm_type) 
 %
 %  input: conn: mesh connectivity matrix 
 %       : vtx_coords: mesh nodes veterx-coordinates 
@@ -76,7 +76,7 @@ function [global_res , jac]= eval_res(u ,conn, vtx_coords, elm_type)
                
          % element residual evaluation
          res_e = Be'*We.*f0 + De_res;
-         
+        
          
          % global residual assembly
          temp=conn(i,:)';
