@@ -7,8 +7,9 @@ format short
 %vector of errors
 j=1;
 err=zeros(1,12);
+fd_err=zeros(1,12);
 h = zeros(1,12);
-for i=15:15:15
+for i=5:5:10
     % User given parameters to generate mesh with quadliteral elements
     nx=i;
     ny=i;
@@ -20,6 +21,9 @@ for i=15:15:15
     y1 = pi/2;
     z1 = pi/2;
     elm_type = 'Q4';
+    
+%     nx=3;
+%     ny=2;
 
     
    
@@ -37,23 +41,56 @@ for i=15:15:15
     % solution vector
     u = zeros(1,u_sz)';
     
+    fdu_sz = size(vtx_coords,1);
+    % solution vector
+    fdu = zeros(1,fdu_sz)';
+    
+    norms = zeros(2,10);
+    
     global_res_norm=1;
-    while(global_res_norm > 1.0e-4)
+    fdglobal_res_norm=1;
+   
+    iter=1;
+    norm_iter=1;
+    while((global_res_norm > 1.0e-9 || fdglobal_res_norm > 1.0e-9) && iter <3 )
+        
         [global_res, jac] = eval_res(u, conn,vtx_coords, elm_type);
+        [fdglobal_res, fdjac] = fdeval_res(fdu, conn,vtx_coords, elm_type);
+        
+        gl_res_diff =  fdglobal_res - global_res;       
+        jac_diff = fdjac - jac;
                 
         global_res_norm = norm(global_res);
-        if(global_res_norm < 1.0e-4)
-            break;
-        end
+%         if(global_res_norm < 1.0e-4)
+%             break;
+%         end
+        
+        fdglobal_res_norm = norm(fdglobal_res);
+%         if(fdglobal_res_norm < 1.0e-4)
+%             break;
+%         end  
+         norms(1,norm_iter)= global_res_norm;
+         norms(2,norm_iter)= fdglobal_res_norm;
+
+        
         fun = @(u)eval_res(u, conn, vtx_coords, elm_type);
+        fdfun = @(fdu)fdeval_res(fdu, conn, vtx_coords, elm_type);
         %options = optimoptions(@fsolve,'Display','iter',...
         %options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
         options = optimset('Jacobian','on');
         sol = fsolve(fun, global_res, options);
+        fdoptions = optimset('Jacobian','on');
+        fdsol =fsolve(fdfun, fdglobal_res, fdoptions);
         u=sol;
+        fdu=fdsol;  
+        
+        udiff = fdsol-sol;
+        norm_iter=norm_iter+1;
+        iter=iter+1;
     end  
-     
+      
     fem_sol = sol;
+    fd_fem_sol = fdsol;
     
     exactSol = exactf(vtx_coords);
         
@@ -67,13 +104,15 @@ for i=15:15:15
 
     %calculate the error norm
     error = norm(exactSol - fem_sol)/norm(fem_sol);
+    fd_error = norm(exactSol - fd_fem_sol)/norm(fd_fem_sol);
     err(j) =error;
+    fd_err(j)=fd_error;
     h(j) = hsz;
     j=j+1;
     
 end
 figure
-loglog(h,err,'r-o',h,0.001*h,'b:',h, 0.1*(h.^2),'b--');
+loglog(h,err,'r-o',h,fd_err,'g--*', h,0.001*h,'b:',h, 0.1*(h.^2),'b--');
 xlabel('h = sqrt(sum(element sides squared))')
 ylabel('error')
-legend('FEM-Q4','O(h)','O(h^2)','Location','northwest')
+legend('FEM-Q4-jac','FEM-Q4-fd-jac','O(h)','O(h^2)','Location','northwest')

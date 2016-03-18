@@ -3,13 +3,14 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
 
 %  input: ue: corresponding u for each element evalauted at quadrature points
 %       : grad_ue: corresponding grad_u for each element evalauted at quadrature points (cell not matrix)
-%       : mp_qd_pts: quadrature points mapped in the reference elem
+%       : xe: quadrature points mapped in the reference elem
 %
 % output: f0: any possible source from given problem
 %       : f1: any possible source from given problem
-     
+     x=xe(:,1);
+     y=xe(:,2);
      %user defined rhs
-     g = tanh(xe(:,1)).*exp(xe(:,2))+sin(xe(:,2));   
+     g = tanh(x).*exp(y)+sin(y); 
      
      % Weak Form: (v: test/weight function)
      % integral(v*f0(ue,grad_ue) + grad_v : f1(ue,grad_ue)) = 0 
@@ -24,15 +25,15 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
        end
        %==============%
        
-       %f_i,0 = partial(f_i)/partial(ue)
+       %f_0,i = partial(f_i)/partial(ue)
        f00 = ones(size(f0,1),1);
-       f10{1} = zeros(size(f1{1},1),1); 
-       f10{2} = zeros(size(f1{1},1),1);
+       f01{1} = zeros(size(f1{1},1),1); 
+       f01{2} = zeros(size(f1{1},1),1);
        
        
-       %f_i,1 = partial(f_i)/partial(gradue)
-       f01{1} = zeros(size(f0,1),1);
-       f01{2} = zeros(size(f0,1),1);
+       %f_1,i = partial(f_i)/partial(gradue)
+       f10{1} = zeros(size(f0,1),1);
+       f10{2} = zeros(size(f0,1),1);
        f11{1} = zeros(size(f1{1},1),1);
        f11{2} = zeros(size(f1{1},1),1);       
        
