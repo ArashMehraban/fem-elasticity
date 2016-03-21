@@ -1,7 +1,7 @@
 function [W_hat, B, D0, D1, D2] = get_shape(elm_type)
 % GET_SHAPE returns shape/basis functions for following Element Types:
-%     2D elements: Q4 , Q9,
-%     3D elements: Hex8 , Hex27 
+%     2D elements: Q1 , Q2,
+%     3D elements: Q1H , Q2H 
 %
 % input: elm_type: Element type
 %
@@ -34,14 +34,14 @@ function [W_hat, B, D0, D1, D2] = get_shape(elm_type)
 %                          D2 = dHat (K) bHat (K) bHat
 %
 %
-       if (strcmp(elm_type,'Q4') || strcmp(elm_type,'Hex8'))
+       if (strcmp(elm_type,'Q1') || strcmp(elm_type,'Q1H'))
             n_gs_pts = 2;
             % x: Guass points    w: Gauss weights
             [x, w] = get_quadrature(n_gs_pts);  
             bHat = [(1-x)/2, (1+x)/2];
             dHat = [-1/2+0*x, 1/2+0*x];
        end
-       if(strcmp(elm_type, 'Q9') || strcmp(elm_type,'Hex27'))
+       if(strcmp(elm_type, 'Q2') || strcmp(elm_type,'Q2H'))
             n_gs_pts = 3;
             % x: Guass points    w: Gauss weights
             [x, w] = get_quadrature(n_gs_pts); 

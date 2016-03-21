@@ -21,6 +21,8 @@ function Di = get_elem_dirv(invJe, D0, D1, varargin)
     %               [j2_11  j2_12  j2_21  j2_22]
     %               [j3_11  j3_12  j3_21  j3_22]
     %               [j4_11  j4_12  j4_21  j4_22]
+    
+    invJe = cell2mat(invJe);
 
         blocksz = size(invJe,2)/size(D0,1);
         block_invJe = [invJe(:, 1:blocksz:end) ; invJe(:, 2:blocksz:end)]';
@@ -29,8 +31,11 @@ function Di = get_elem_dirv(invJe, D0, D1, varargin)
     
     
     %2D     
-        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D0;
-        Di{2} = diag(block_invJe(:,3))* D1 + diag(block_invJe(:,4))*D1;
+%        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D0;
+         Di{1} = (diag(block_invJe(:,1)) + diag(block_invJe(:,2)))*D0;
+%         diff= Di{1}-Di_test{1};
+        %Di{2} = diag(block_invJe(:,3))* D1 + diag(block_invJe(:,4))*D1;
+         Di{2} = (diag(block_invJe(:,3)) + diag(block_invJe(:,4)))*D1;
     
     
     %3D

@@ -27,10 +27,10 @@ function [global_res , fdjac] = fdeval_res(u ,conn, vtx_coords, elm_type)
          % D2e: Derivative of shape functions with respect to zeta for each element
          % W_hat_e: Weights for each element
          
-          if(strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9'))
+          if(strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2'))
              [W_hat_e, Be, D0e, D1e] = get_shape(elm_type);  
           end
-          if(strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27'))
+          if(strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H'))
               [W_hat_e, Be, D0e, D1e, D2e] = get_shape(elm_type);
           end
          
@@ -42,12 +42,12 @@ function [global_res , fdjac] = fdeval_res(u ,conn, vtx_coords, elm_type)
          elem_u = u(conn(i,:));
                   
          %get mapping constituents from jacobian
-         if (strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9') )
+         if (strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2') )
              [dets, invJe] = jacobian(element_vtx_coords, D0e, D1e);             
              Die = get_elem_dirv(invJe, D0e, D1e);
          end
          
-         if (strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27') )
+         if (strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H') )
             [dets, invJe] = jacobian(element_vtx_coords, D0e, D1e, D2e);
             Die = get_elem_dirv(invJe, D0e, D1e, D2e);
          end

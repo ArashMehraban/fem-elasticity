@@ -4,7 +4,7 @@ function [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x_
 %
 %2D:
 %[conn,vtx_coords,bndry_nodes,bndry_elems] = CREATE_MESH(elm_type, nx,x_init,x_final, ny,y_init,y_final)
-%input: elm_type: Q4 (4-noded element) or Q9 (9-noded element)
+%input: elm_type: Q1 (4-noded element) or Q2 (9-noded element)
 %       nx: number of mesh points in x-direction
 %       x_init:  lower-left x-coordiante of a rectangular mesh
 %       x_final: upper-right x-coordiante of a rectangular mesh
@@ -21,11 +21,11 @@ function [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x_
 %  
 %      o---------o
 %      |3       4|
-%      |         |     <- 1 Q4 element with LEXOGRAPHICAL ORDERING
+%      |         |     <- 1 Q1 element with LEXOGRAPHICAL ORDERING
 %      |1       2|
 %      o---------o
 %  e.g   
-%  [conn, vtx_coords,bndry_nodes,bndry_elems] = create_mesh('Q4',4,0,1.5,3,0,0.8)
+%  [conn, vtx_coords,bndry_nodes,bndry_elems] = create_mesh('Q1',4,0,1.5,3,0,0.8)
 %  produces the mesh below:
 %
 %     
@@ -80,7 +80,7 @@ function [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x_
 %                   * * *              * * *                      * * *              * * *
 %3D:
 %[conn,vtx_coords,bndry_nodes,bndry_elems] = CREATE_MESH(elm_type, nx,x_init,x_final, ny,y_init,y_final,nz,z_init,z_final)
-%input: elm_type: Hex8 (8-noded element) or Hex27 (27-noded element)
+%input: elm_type: Q1H (8-noded element) or Q2H (27-noded element)
 %       nx: number of mesh points in x-direction
 %       x_init:  lower-left x-coordiante of a cubical mesh
 %       x_final: upper-right x-coordiante of a cubical mesh
@@ -105,22 +105,22 @@ function [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x_
 %        /   o---------/---o 
 %       /   / 3       /  4/
 %    5 /   /       6 /   / 
-%     o-------------o   /   <- 1 Hex8 element with LEXOGRAPHICAL ORDERING           
+%     o-------------o   /   <- 1 Q1H element with LEXOGRAPHICAL ORDERING           
 %     |  /          |  / 
 %     | /           | /    
 %     |/1          2|/
 %     o-------------o
 
 % Minimal error checking for user input:
-if ~(strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9') || strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27'))
-    error('elm_type not supported. Choose Q4, Q9, Hex8 or Hex27.')
+if ~(strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2') || strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H'))
+    error('elm_type not supported. Choose Q1, Q2, Q1H or Q2H.')
 end
 
-if( (strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27')) && nargin <10)
-        error('Hex8 or Hex27 require z direction entries.')
+if( (strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H')) && nargin <10)
+        error('Q1H or Q2H require z direction entries.')
 end
 
-if(strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9') || strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27'))
+if(strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2') || strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H'))
    if(x_final <= x_init || y_final <= y_init) 
        error('mesh final point value cannot be smaller than initial point value')
    end
@@ -129,7 +129,7 @@ if(strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9') || strcmp(elm_type,'Hex8') || 
    end
 end
 
-if(strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27'))
+if(strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H'))
    if(varargin{3} <= varargin{2}) 
        error('mesh final point value cannot be smaller than initial point value')
    end
@@ -138,9 +138,9 @@ if(strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27'))
    end
 end
 
-%-----------------------Q4 element----------------------------------------%
+%-----------------------Q1 element----------------------------------------%
 
-  if(strcmp(elm_type,'Q4')) 
+  if(strcmp(elm_type,'Q1')) 
       A=linspace(1,nx*ny,nx*ny);
       msh=(reshape(A',[nx,ny])');        
      
@@ -166,9 +166,9 @@ end
       end
   end
   
-%-----------------------Q9 element----------------------------------------%
+%-----------------------Q2 element----------------------------------------%
    
-  if(strcmp(elm_type,'Q9'))
+  if(strcmp(elm_type,'Q2'))
            
       xx = linspace(x_init,x_final,nx);
       ave_x = mean([xx(1:end-1);xx(2:end)]);
@@ -189,17 +189,17 @@ end
       % (x,y) coords for each Node in the mesh
       vtx_coords = [vtx_x, vtx_y];
       
-      nx_q9 = size(xtemp,2);
-      ny_q9 = size(ytemp,2);
+      nx_Q2 = size(xtemp,2);
+      ny_Q2 = size(ytemp,2);
       %mesh nodes
-      A=linspace(1,nx_q9*ny_q9,nx_q9*ny_q9);
-      msh=(reshape(A',[nx_q9,ny_q9])'); 
+      A=linspace(1,nx_Q2*ny_Q2,nx_Q2*ny_Q2);
+      msh=(reshape(A',[nx_Q2,ny_Q2])'); 
 
       %Allocating space for connectivity matrix 
       conn=zeros((ny-1)*(nx-1),9);
       iter=1;
-      for i=1:2:ny_q9-1
-          for j=1:2:nx_q9-1
+      for i=1:2:ny_Q2-1
+          for j=1:2:nx_Q2-1
               %populate connectivity matrix lexographically
               conn(iter,:) = [msh(i,j),msh(i,j+1), msh(i,j+2), msh(i+1,j), msh(i+1,j+1) ...
                               msh(i+1,j+2),msh(i+2,j), msh(i+2,j+1), msh(i+2,j+2)];
@@ -208,11 +208,11 @@ end
       end
   end
   
-  if(strcmp(elm_type,'Q4') || strcmp(elm_type,'Q9'))
+  if(strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2'))
 
   
 %===============================%
-%  Boundary Nodes (Q4) or (Q9)  %
+%  Boundary Nodes (Q1) or (Q2)  %
 %===============================%
                 
       bottom_nodes = msh(1,1:end);
@@ -223,7 +223,7 @@ end
       bndry_nodes = unique([bottom_nodes,right_nodes',left_nodes',top_nodes]);
     
 %==================================%
-% Boundary elements (Q4) or (Q9)   %
+% Boundary elements (Q1) or (Q2)   %
 %==================================%
       
       B=linspace(1,(nx-1)*(ny-1),(nx-1)*(ny-1));
@@ -240,8 +240,8 @@ end
   
 %3D  elements:
 
-%-----------------------Hex8 element--------------------------------------%  
-  if(strcmp(elm_type,'Hex8'))
+%-----------------------Q1H element--------------------------------------%  
+  if(strcmp(elm_type,'Q1H'))
       
       nz = varargin{1};
       z_init = varargin{2};
@@ -283,9 +283,9 @@ end
       end
   end
   
-%-----------------------Hex27 element-------------------------------------%  
+%-----------------------Q2H element-------------------------------------%  
 
-  if(strcmp(elm_type,'Hex27'))
+  if(strcmp(elm_type,'Q2H'))
       
       nz = varargin{1};
       z_init = varargin{2};
@@ -356,10 +356,10 @@ end
       end
   end
   
-  if(strcmp(elm_type,'Hex8') || strcmp(elm_type,'Hex27'))
+  if(strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H'))
       
 %===================================%
-%  Boundary Nodes (Hex8) or (Hex27) %
+%  Boundary Nodes (Q1H) or (Q2H) %
 %===================================%  
       
       btn = msh(:,:,1);
@@ -378,7 +378,7 @@ end
       bndry_nodes=unique([bottom_nodes,top_nodes,left_nodes,right_nodes,front_nodes,back_nodes]);
       
 %=====================================%
-% Boundary elements (Hex8) or (Hex27) %
+% Boundary elements (Q1H) or (Q2H) %
 %=====================================%
       
       B=linspace(1,(nx-1)*(ny-1)*(nz-1),(nx-1)*(ny-1)*(nz-1));
