@@ -9,21 +9,18 @@ j=1;
 err=zeros(1,12);
 fd_err=zeros(1,12);
 h = zeros(1,12);
-for i=6:6:6
+for i=6:5:11
     % User given parameters to generate mesh with quadliteral elements
     nx=i;
     ny=i;
-    nz=i+2; 
+    nz=i; 
     x0 = -pi/2;
     y0 = -pi/2;
     z0 = -pi/2;
     x1 = pi/2;
     y1 = pi/2;
     z1 = pi/2;
-    elm_type = 'Q1';
-    
-    nx=2;
-    ny=2;
+    elm_type = 'Q2';
     
   
     % generate 2D mesh based on element type
@@ -55,20 +52,21 @@ for i=6:6:6
         
         [global_res, jac] = eval_res(u, conn,vtx_coords, elm_type);
         [fdglobal_res, fdjac] = fdeval_res(fdu, conn,vtx_coords, elm_type);
-        %sgr = sparse(global_res);
+        
         
         gl_res_diff =  fdglobal_res - global_res;       
         jac_diff = fdjac - jac;
                 
         global_res_norm = norm(global_res);
-%         if(global_res_norm < 1.0e-4)
-%             break;
-%         end
+        if(global_res_norm < 1.0e-9)
+            fdglobal_res_norm = norm(fdglobal_res);
+            break;
+        end
         
         fdglobal_res_norm = norm(fdglobal_res);
-%         if(fdglobal_res_norm < 1.0e-4)
-%             break;
-%         end  
+        if(fdglobal_res_norm < 1.0e-9)
+            break;
+        end  
          norms(1,norm_iter)= global_res_norm;
          norms(2,norm_iter)= fdglobal_res_norm;
 
@@ -76,10 +74,10 @@ for i=6:6:6
         fun = @(u)eval_res(u, conn, vtx_coords, elm_type);
         fdfun = @(fdu)fdeval_res(fdu, conn, vtx_coords, elm_type);
         
-        %options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
-        options = optimset('Jacobian','on');
+        options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
+        %options = optimset('Jacobian','on');
         sol = fsolve(fun, global_res, options);
-        %sol = fsolve(fun, sgr, options);
+        
         fdoptions = optimset('Jacobian','on');
         fdsol =fsolve(fdfun, fdglobal_res, fdoptions);
         u=sol;
@@ -113,8 +111,8 @@ for i=6:6:6
     
 end
 figure
-loglog(h,err,'r-o',h,fd_err,'b--*', h,0.001*h,'r:',h, 0.1*(h.^2),'b--');
+loglog(h,err,'r-o',h,fd_err,'b--*',h, 0.02*(h.^2),'b--');
 xlabel('h = sqrt(sum(element sides squared))')
 ylabel('error')
-legend('FEM-Q2-jac','FEM-Q2-fd-jac','O(h)','O(h^2)','Location','northwest')
-title('25-100 Q2 (2D) elements')
+legend('FEM-Q_2-w/jac','FEM-Q_2-w/fd-jac','O(h^2)','Location','northwest')
+title('L_2 Proj: 25-100 Q_2 (2D) elements')

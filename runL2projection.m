@@ -8,9 +8,9 @@ format short
 j=1;
 err=zeros(1,12);
 h = zeros(1,12);
-for i=3:3:3  %66
+for i=6:5:66  %66
     % User given parameters to generate mesh with quadliteral elements
-    nx=i;
+    nx=i+1;
     ny=i;
     nz=i+2; 
     x0 = -pi/2;
@@ -42,12 +42,12 @@ for i=3:3:3  %66
    
     iter=1;
     norm_iter=1;
-    while((global_res_norm > 1.0e-9 || fdglobal_res_norm > 1.0e-9) && iter <5 )
+    while((global_res_norm > 1.0e-9 || fdglobal_res_norm > 1.0e-9) && iter <3 )
         
         [global_res, jac] = eval_res(u, conn,vtx_coords, elm_type);
                 
         global_res_norm = norm(global_res);
-        if(global_res_norm < 1.0e-7)
+        if(global_res_norm < 1.0e-9)
             break;
         end
 
@@ -84,8 +84,17 @@ for i=3:3:3  %66
     
 end
 figure
-loglog(h,err,'r-o', h,0.001*h,'r:',h, 0.1*(h.^2),'b--');
+% Q1
+% loglog(h,err,'r-o', h,0.001*h,'r:',h, 0.01*(h.^2),'b--');
+% legend('FEM-Q1','O(h)','O(h^2)','Location','northwest')
+% title('L2-proj: 25-4225 Q1 (2D) elements')
+
+% Q2
+loglog(h,err,'r-o', h,0.001*(h.^3),'r:',h, 0.1*(h.^2),'b--');
+legend('FEM-Q2','O(h^3)','O(h^2)','Location','northwest')
+title('L2-proj: 25-4225 Q1 (2D) elements')
+
 xlabel('h = sqrt(sum(element sides squared))')
 ylabel('error')
-legend('FEM-Q2','O(h)','O(h^2)','Location','northwest')
-title('25-4225 Q2 (2D) elements')
+
+

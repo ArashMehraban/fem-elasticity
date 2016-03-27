@@ -70,12 +70,12 @@ function [global_res , jac] = eval_res(u ,conn, vtx_coords, elm_type)
          
          De_res = 0;
          for j=1:size(Die,2)
-             De_res = De_res +(Die{j}'* We.*f1{j});
+             De_res = De_res +(Die{j}'* (We.*f1{j}));
          end
          
                
          % element residual evaluation
-         res_e = Be'*We.*f0 + De_res;
+         res_e = Be'*(We.*f0) + De_res;
         
          
          % global residual assembly
