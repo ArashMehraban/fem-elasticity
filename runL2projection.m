@@ -24,11 +24,11 @@ for i=6:5:66  %66
   
     % generate 2D mesh based on element type
     if (strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2'))
-        [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x0,x1,ny, y0,y1);
+        [conn,vtx_coords,~,~] = create_mesh(elm_type, nx,x0,x1,ny, y0,y1);
     end
     % generate 3D mesh based on element type
     if (strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H'))
-        [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x0,x1,ny, y0,y1,nz,z0,z1);
+        [conn,vtx_coords,~,~] = create_mesh(elm_type, nx,x0,x1,ny, y0,y1,nz,z0,z1);
     end
     
     % number of unknowns/nodes on the mesh
