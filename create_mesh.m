@@ -1,4 +1,4 @@
-function [conn,vtx_coords,bndry_nodes,bndry_elems] = create_mesh(elm_type, nx,x_init,x_final, ny,y_init,y_final,varargin)
+function [conn,vtx_coords,bndry_nodes,bndry_elems,geometry] = create_mesh(elm_type, nx,x_init,x_final, ny,y_init,y_final,varargin)
 %CREATE_MESH can genrates 2D or 3D rectangular or cubical LEXOGRAPHICALLY ORDERed mesh based
 %on the elm_type input. 
 %
@@ -221,6 +221,12 @@ end
       left_nodes = msh(:,1);
       
       bndry_nodes = unique([bottom_nodes,right_nodes',left_nodes',top_nodes]);
+      if (nargout > 4)
+         name = {'bottom', 'right', 'left', 'top'};
+         nodes = {bottom_nodes,right_nodes',left_nodes',top_nodes};
+         geometry = struct(name{1}, nodes{1}, name{2}, nodes{2},name{3}, nodes{3},name{4}, nodes{4});
+
+      end
     
 %==================================%
 % Boundary elements (Q1) or (Q2)   %

@@ -1,7 +1,7 @@
-function [W_hat, B, D0, D1, D2] = get_shape(elm_type)
+function shapes = get_shape(elm_type)
 % GET_SHAPE returns shape/basis functions for following Element Types:
-%     2D elements: Q1 , Q2,
-%     3D elements: Q1H , Q2H 
+%     2D elements: 4: QUAD4  or  9: QUAD9
+%     3D elements: 8: HEX8   or 27: HEX27 
 %
 % input: elm_type: Element type
 %
@@ -12,7 +12,8 @@ function [W_hat, B, D0, D1, D2] = get_shape(elm_type)
 %                                /  
 %                             zeta
 % 2D:
-% output: B: Basis/Shape functions evaluted at quadrature points.
+% output: shape object that contains:
+%       : B: Basis/Shape functions evaluted at quadrature points.
 %       : D0: derivative of basis/shape functions wrt xi evaluted at quadrature points
 %       : D1: derivative of basis/shape functions wrt eta evaluted at quadrature points
 %       : W_hat: Weights for the elements
@@ -34,14 +35,14 @@ function [W_hat, B, D0, D1, D2] = get_shape(elm_type)
 %                          D2 = dHat (K) bHat (K) bHat
 %
 %
-       if (strcmp(elm_type,'Q1') || strcmp(elm_type,'Q1H'))
+       if(elm_type == 4 || elm_type == 8)
             n_gs_pts = 2;
             % x: Guass points    w: Gauss weights
             [x, w] = get_quadrature(n_gs_pts);  
             bHat = [(1-x)/2, (1+x)/2];
             dHat = [-1/2+0*x, 1/2+0*x];
        end
-       if(strcmp(elm_type, 'Q2') || strcmp(elm_type,'Q2H'))
+       if(elm_type == 9 || elm_type == 27)
             n_gs_pts = 3;
             % x: Guass points    w: Gauss weights
             [x, w] = get_quadrature(n_gs_pts); 
@@ -51,29 +52,41 @@ function [W_hat, B, D0, D1, D2] = get_shape(elm_type)
       
 
 %   2D 
-    if (nargout == 4) 
-        % Basis/Shape functions
-        B = kron(bHat,bHat);  
-        % xi
-        D0 = kron(bHat,dHat);
-        % eta
-        D1 = kron(dHat,bHat);
-        % weights
-        W_hat = kron(w,w);
-
+    if(elm_type == 4 || elm_type == 9)         
+        
+        field_names = {'B', 'D0', 'D1' ,'W_hat'};
+        
+        % Basis/Shape functions (B)
+        field_vals{1} = kron(bHat,bHat);  
+        % xi (D0)
+        field_vals{2} = kron(bHat,dHat);
+        % eta (D1)
+        field_vals{3} = kron(dHat,bHat);
+        % weights (W_hat)
+        field_vals{4} = kron(w,w);
     end
     
 %   3D
-    if (nargout == 5) 
-        % Basis/Shape functions 
-        B = kron(kron(bHat,bHat),bHat);  
-        % xi 
-        D0 = kron(kron(bHat,bHat),dHat);
-        % eta 
-        D1 = kron(kron(bHat,dHat),bHat);
-        % zeta
-        D2 = kron(kron(dHat,bHat),bHat);
-        % weights
-        W_hat = kron(kron(w,w), w);
+    if(elm_type == 8 || elm_type == 27) 
+        
+        field_names = {'B', 'D0', 'D1' ,'D2', 'W_hat'};
+        
+        % Basis/Shape functions (B)
+        field_vals{1} = kron(kron(bHat,bHat),bHat);  
+        % xi (D0)
+        field_vals{2} = kron(kron(bHat,bHat),dHat);
+        % eta (D1)
+        field_vals{3} = kron(kron(bHat,dHat),bHat);
+        % zeta (D2)
+        field_vals{4} = kron(kron(dHat,bHat),bHat);
+        % weights (W_hat)
+        field_vals{5} = kron(kron(w,w), w);
     end
+    
+    shapes=struct();
+    for i=1:size(field_names,2)
+        shapes.(field_names{i}) = field_vals{i};
+    end
+    
+    
 end

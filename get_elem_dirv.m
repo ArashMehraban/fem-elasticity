@@ -26,17 +26,11 @@ function Di = get_elem_dirv(invJe, D0, D1, varargin)
 
         blocksz = size(invJe,2)/size(D0,1);
         block_invJe = [invJe(:, 1:blocksz:end) ; invJe(:, 2:blocksz:end)]';
-%       blocksz = size(invJe,1)/size(D0,1);
-%       block_invJe = [invJe(1:blocksz:end,:)' ; invJe(2:blocksz:end,:)']';
-    
+   
     
     %2D     
-%        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D0;
          Di{1} = (diag(block_invJe(:,1)) + diag(block_invJe(:,2)))*D0;
-%         diff= Di{1}-Di_test{1};
-        %Di{2} = diag(block_invJe(:,3))* D1 + diag(block_invJe(:,4))*D1;
-         Di{2} = (diag(block_invJe(:,3)) + diag(block_invJe(:,4)))*D1;
-    
+         Di{2} = (diag(block_invJe(:,3)) + diag(block_invJe(:,4)))*D1;    
     
     %3D
      if(nargin > 3)
