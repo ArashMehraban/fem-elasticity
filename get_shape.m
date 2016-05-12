@@ -1,4 +1,4 @@
-function shapes = get_shape(elm_type)
+function [B, Ds, W_hat] = get_shape(elm_type)
 % GET_SHAPE returns shape/basis functions for following Element Types:
 %     2D elements: 4: QUAD4  or  9: QUAD9
 %     3D elements: 8: HEX8   or 27: HEX27 
@@ -54,38 +54,38 @@ function shapes = get_shape(elm_type)
 %   2D 
     if(elm_type == 4 || elm_type == 9)         
         
-        field_names = {'B', 'D0', 'D1' ,'W_hat'};
+        field_names = {'D0', 'D1'};
         
         % Basis/Shape functions (B)
-        field_vals{1} = kron(bHat,bHat);  
+        B = kron(bHat,bHat);  
         % xi (D0)
-        field_vals{2} = kron(bHat,dHat);
+        field_vals{1} = kron(bHat,dHat);
         % eta (D1)
-        field_vals{3} = kron(dHat,bHat);
+        field_vals{2} = kron(dHat,bHat);
         % weights (W_hat)
-        field_vals{4} = kron(w,w);
+        W_hat = kron(w,w);
     end
     
 %   3D
     if(elm_type == 8 || elm_type == 27) 
         
-        field_names = {'B', 'D0', 'D1' ,'D2', 'W_hat'};
+        field_names = {'D0', 'D1' ,'D2'};
         
         % Basis/Shape functions (B)
-        field_vals{1} = kron(kron(bHat,bHat),bHat);  
+        B = kron(kron(bHat,bHat),bHat);  
         % xi (D0)
-        field_vals{2} = kron(kron(bHat,bHat),dHat);
+        field_vals{1} = kron(kron(bHat,bHat),dHat);
         % eta (D1)
-        field_vals{3} = kron(kron(bHat,dHat),bHat);
+        field_vals{2} = kron(kron(bHat,dHat),bHat);
         % zeta (D2)
-        field_vals{4} = kron(kron(dHat,bHat),bHat);
+        field_vals{3} = kron(kron(dHat,bHat),bHat);
         % weights (W_hat)
-        field_vals{5} = kron(kron(w,w), w);
+        W_hat = kron(kron(w,w), w);
     end
     
-    shapes=struct();
+    Ds=struct();
     for i=1:size(field_names,2)
-        shapes.(field_names{i}) = field_vals{i};
+        Ds.(field_names{i}) = field_vals{i};
     end
     
     

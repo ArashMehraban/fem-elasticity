@@ -8,41 +8,44 @@ format short
 j=1;
 err=zeros(1,12);
 h = zeros(1,12);
-for i= 4:4:4 %6:5:11 %11:10:51 %66
-    filename = 'disk9_4e';
+for i= 1:1 
+    %disk9_4e
+    filename = 'cylinder8';
     ext='exo';
    
+    %get mesh information from exodus (.exo or .e) file
     msh = get_mesh(filename,ext,'lex');
     
-    %get all dirichlet boundary node_sets
+    %get all Dirichlet boundary node_sets
     dir_bndry_nodes = get_all_dir_ns(msh);
     
+    %get number of nodes in mesh
     num_nodes = msh.num_nodes;  
     
+    %get the known u vector and global to local mapping foe each u
     [u, global_idx_map] = preproc(num_nodes,dir_bndry_nodes);
     
-    vtx_coords = msh.vtx_coords;    
-    %get constructed dir_bndry_vals and exac Solutions on remaining nodes
-    [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes);
+    %== Construct manufactured solution. Remove if dir_bndry_val given  ==%
+    %get vertex coordinates from mesh                                     %
+    vtx_coords = msh.vtx_coords;                                          %
+    %get constructed dir_bndry_vals and exac Solutions on remaining nodes %
+    [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes);%
+    %=====================================================================%
         
-    elm_type = msh.num_nodes_per_elem; 
-    shape_bdw = get_shape(elm_type);
-    
     global_res_norm=1;
    
     iter=1;
     norm_iter=1;
     while((global_res_norm > 1.0e-9) && iter <3 )
         
-        %How about u_field???
-        [global_res, jac] = eval_res(u, global_idx_map, shape_bdw, msh, dir_bndry_val);
+        [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val);
                                        
         global_res_norm = norm(global_res);
         if(global_res_norm < 1.0e-9)
             break;
         end         
         
-        fun = @(u)eval_res(u, global_idx_map, shape_bdw, msh, dir_bndry_val);
+        fun = @(u)eval_res(u, global_idx_map, msh, dir_bndry_val);
                
         options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
                 

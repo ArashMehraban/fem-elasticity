@@ -2,7 +2,7 @@ function J=jacF(func,x)
 % JACF computes the Jacobian of a function using Finite differences
     
     n=length(x);
-    % Allocate space for teh Jacobian
+    % Allocate space for the Jacobian
     J =zeros(n,n);
     fx=feval(func,x);
     eps=1.e-8; 

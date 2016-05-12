@@ -1,13 +1,13 @@
-function [global_res , jac] = eval_res(u, global_idx_map, shape_bdw, msh, dir_bndry_val)
+function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
 % EVAL_RES evaluates the global residual and the Jacobian
-%  input: conn: mesh connectivity matrix 
-%       : vtx_coords: mesh nodes veterx-coordinates 
-%       : current solution (guess)
-%       : elem_type = elment type
+%  input:              u: vector of unknowns 
+%       : global_idx_map: global map of local u's
+%       :            msh: mesh object (see get_mesh function)
+%       :  dir_bndry_val: Dirchlet boundary values if any
 %
 % output: global_res, jac
 
-     %get the number of elements
+     %get the numBr of elements
      num_elem = msh.num_elem; 
      
      %get connectivity matrix
@@ -25,75 +25,73 @@ function [global_res , jac] = eval_res(u, global_idx_map, shape_bdw, msh, dir_bn
      %get all dirichlet boundary node_sets
      dir_bndry_nodes = get_all_dir_ns(msh);
       
-     global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);
-     
+     global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);     
    
      %Allocate space for globall Jacobian
      jac = zeros(unknown_sz,unknown_sz);
      
+     %get size of dofs per node
      sz_global_idx_map = size(global_idx_map,2);
-           
+     
+     %get element type    
+     elm_type = msh.num_nodes_per_elem; 
+     %get Weights, Basis (B) functions and their Derivatives (D0, D1 and D2)
+     [B, Ds, W_hat] = get_shape(elm_type);
+               
      for i=1:num_elem
          
-         %get number of dof for each element
+         %get numBr of dof for each element
          neldof = size(conn(i,:),2)*sz_global_idx_map;
           
          %get corresponding vertex coordinates for each element 
          element_vtx_coords = vtx_coords(conn(i,:),:);
          
          %get corresponding unknown/solution u for each element
-         elem_u = global_u(conn(i,:),:);         
-                 
+         elem_u = global_u(conn(i,:),:);   
+         
          %get mapping constituents from jacobian
-         if(strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2') )
-             [dets, invJe] = jacobian(element_vtx_coords, D0e, D1e);             
-             Die = get_elem_dirv(invJe, D0e, D1e);
-         end
+         [dets, invJe] = jacobian(element_vtx_coords, Ds);         
+         Di = get_elem_dirv(invJe, Ds);
+                 
+         ue = B*elem_u;
          
-         if(strcmp(elm_type,'Q1H') || strcmp(elm_type,'Q2H') )
-            [dets, invJe] = jacobian(element_vtx_coords, D0e, D1e, D2e);
-            Die = get_elem_dirv(invJe, D0e, D1e, D2e);
-         end
-         
-         ue = Be*elem_u;
-         
-         grad_ue=cell(1,size(Die,2));
-         for  j=1:size(Die,2)
-             grad_ue{j}=Die{j}*elem_u;
+         grad_ue=cell(1,size(Di,2));
+         for  j=1:size(Di,2)
+             grad_ue{j}=Di{j}*elem_u;
          end
                   
-         mp_qd_pts= Be*element_vtx_coords;
+         mp_qd_pts= B*element_vtx_coords;
          
         [f0,f1,f00, f01, f10, f11] = userf(ue, grad_ue,mp_qd_pts); 
                  
-         %get Gauss weights for the current element
-         We = W_hat_e.*dets';
+         %get Gauss Weights for the current element
+         W = W_hat.*dets';
                   
-         De_res = 0;
-         for j=1:size(Die,2)
-             De_res = De_res +(Die{j}'* (We.*f1{j}));
+         D_res = 0;
+         for j=1:size(Di,2)
+             D_res = D_res +(Di{j}'* (W.*f1{j}));
          end
          
          % element residual evaluation
-         res_e = Be'*(We.*f0) + De_res;
+         res_e = B'*(W.*f0) + D_res;
                       
          %element jac_e constituents
-         f0u = Be'*diag(We.*f00)*Be;
+         f0u = B'*diag(W.*f00)*B;
          
          f01TD =0;
-         for j=1:size(Die,2) 
-            f01TD = f01TD + diag(f01{j})*Die{j};
+         for j=1:size(Di,2) 
+            f01TD = f01TD + diag(f01{j})*Di{j};
          end
-         f0gu = Be'*diag(We)*f01TD;
+         f0gu = B'*diag(W)*f01TD;
          
          f1u = 0;
-         for j=1:size(Die,2) 
-            f1u = f1u + Die{j}'*diag(We.*f10{j})*Be;
+         for j=1:size(Di,2) 
+            f1u = f1u + Di{j}'*diag(W.*f10{j})*B;
          end
          
          f1gu = 0;
-         for j=1:size(Die,2)
-            f1gu = f1gu + Die{j}'* diag(We.*f11{j})*Die{j}; 
+         for j=1:size(Di,2)
+            f1gu = f1gu + Di{j}'* diag(W.*f11{j})*Di{j}; 
          end
          
          % element consistant tnagent evaulation (jac_e)
