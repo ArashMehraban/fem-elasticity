@@ -9,7 +9,7 @@ j=1;
 err=zeros(1,12);
 h = zeros(1,12);
 for i= 4:4:4 %6:5:11 %11:10:51 %66
-    filename = 'disk9';
+    filename = 'disk9_4e';
     ext='exo';
    
     msh = get_mesh(filename,ext,'lex');
@@ -17,7 +17,8 @@ for i= 4:4:4 %6:5:11 %11:10:51 %66
     %get all dirichlet boundary node_sets
     dir_bndry_nodes = get_all_dir_ns(msh);
     
-    num_nodes = msh.num_nodes;           
+    num_nodes = msh.num_nodes;  
+    
     [u, global_idx_map] = preproc(num_nodes,dir_bndry_nodes);
     
     vtx_coords = msh.vtx_coords;    

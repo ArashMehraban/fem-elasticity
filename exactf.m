@@ -9,8 +9,10 @@ function exctSol = exactf(vtx_coords)
     u1=@(x,y)tanh(x).*exp(y)+sin(y);
     u2=@(x,y)tanh(x).*cos(y); 
     
-    exctSol{1} = u1(x,y);
-    exctSol{2} = u2(x,y);
+    exctSol = [u1(x,y),u2(x,y)];
+    
+%     exctSol{1} = u1(x,y);
+%     exctSol{2} = u2(x,y);
   
   
 %   u1=@(x,y)tanh(x).*exp(y)+exp(x);

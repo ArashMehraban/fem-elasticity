@@ -17,20 +17,17 @@ function [global_res , jac] = eval_res(u, global_idx_map, shape_bdw, msh, dir_bn
      vtx_coords = msh.vtx_coords;
      
      %unknown size (size of dofs per unknown u)
-     %unknown_sz = sum(u_section((u_section(:,1)== -1),2));
      unknown_sz = size(u,1);
      
      %Allocate space for global residual for unkowns     
      global_res =zeros(unknown_sz,1);
      
      %get all dirichlet boundary node_sets
-      dir_bndry_nodes = get_all_dir_ns(msh);
+     dir_bndry_nodes = get_all_dir_ns(msh);
+      
+     global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);
      
-      num_nodes = msh.num_nodes;
-      num_dims = msh.num_dims;
-     % construct the global_u that contains the boundary values
-      global_u = setbdry(u,num_nodes, num_dims, dir_bndry_nodes,dir_bndry_val);
-     
+   
      %Allocate space for globall Jacobian
      jac = zeros(unknown_sz,unknown_sz);
      
@@ -45,7 +42,7 @@ function [global_res , jac] = eval_res(u, global_idx_map, shape_bdw, msh, dir_bn
          element_vtx_coords = vtx_coords(conn(i,:),:);
          
          %get corresponding unknown/solution u for each element
-         elem_u = global_u(conn(i,:));         
+         elem_u = global_u(conn(i,:),:);         
                  
          %get mapping constituents from jacobian
          if(strcmp(elm_type,'Q1') || strcmp(elm_type,'Q2') )
