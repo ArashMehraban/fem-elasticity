@@ -69,7 +69,7 @@ function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
                   
          D_res = 0;
          for j=1:size(Di,2)
-             D_res = D_res +(Di{j}'* (W.*f1{j}));
+             D_res = D_res +(Di{j}'*(W.*f1{j}));
          end
          
          % element residual evaluation
