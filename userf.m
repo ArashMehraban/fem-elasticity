@@ -77,9 +77,37 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
 %      f01 = zeros(size(f0,1),1);        
 %      f11{1} = ones(size(f1{1},1));
 %      f11{2} = ones(size(f1{1},1));
+     
 
+    %=== Plane Strain Problem =====%
+    E = 0.3;
+    nu = 5*10e8;
+    rho=2;
+    
+    g1 = -(E.*(nu-1.0./2.0).*(-sin(y)+exp(y).*tanh(x)+sin(y).*(tanh(x).^2-1.0)))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*exp(y).*tanh(x).*(tanh(x).^2-1.0).*(nu-1.0).*2.0)./((nu.*2.0-1.0).*(nu+1.0));
+    g2 = (E.*(exp(y).*(tanh(x).^2-1.0)-cos(y).*tanh(x).*(tanh(x).^2-1.0).*2.0).*(nu-1.0./2.0))./((nu.*2.0-1.0).*(nu+1.0))+(E.*(sin(y)-exp(y).*tanh(x)).*(nu-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0));
 
-     f0 = pho*B*g;
+    f0{1} = rho*g1;
+    f0{2} = rho*g2;
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%% Do NOT for get the 1/2 for strain matrix%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    C =(E/((1+nu)*(1-2*nu)))*[1-nu, nu, 0;
+                             nu,1-nu,0 ;
+                             0 ,0 ,(1-2*nu)/2];
+    
+%     f1=cell(1,size(grad_ue,2));
+%     for  j=1:size(grad_ue,2)
+%         f1{j} = 0*grad_ue{j};
+%     end
+    
+    f00=0;
+    f01=0;
+    f10=0;
+    f11=0;
+    
        
              
 end
