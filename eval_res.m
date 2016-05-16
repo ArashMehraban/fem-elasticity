@@ -67,13 +67,23 @@ function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          %get Gauss Weights for the current element
          W = W_hat.*dets';
                   
-         D_res = 0;
+         D_res = zeros(size(f1{1}));
+         wf1 = zeros(size(f1{1}));
          for j=1:size(Di,2)
-             D_res = D_res +(Di{j}'*(W.*f1{j}));
+             for k=1:size(f1,2)
+                 wf1(:,k) = W.*f1{j}(:,k);
+             end            
+                 D_res = D_res + Di{j}'*wf1;
          end
          
+          
+         wf0 = zeros(size(f0{1},1), size(f0,2));
+         for k=1:size(f0,2)
+             wf0(:,k) = W.*f0{k};
+         end 
+         
          % element residual evaluation
-         res_e = B'*(W.*f0) + D_res;
+         res_e = B'*wf0 + D_res;
                       
          %element jac_e constituents
          f0u = B'*diag(W.*f00)*B;

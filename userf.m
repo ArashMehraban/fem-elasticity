@@ -77,36 +77,40 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
 %      f01 = zeros(size(f0,1),1);        
 %      f11{1} = ones(size(f1{1},1));
 %      f11{2} = ones(size(f1{1},1));
-     
+   
 
-    %=== Plane Strain Problem =====%
-    E = 0.3;
-    nu = 5*10e8;
-    rho=2;
+   
+   %=== Plane Strain Problem =====%
+   
+   %Young's modulus 
+   E = 1;
+   % Poisson ratio 
+   nu = 2*10e11;
+   %strain/stress matrix
+   C =(E/((1+nu)*(1-2*nu)))*[1-nu,nu,0; nu,1-nu,0; 0,0,(1-2*nu)/2];
     
-    g1 = -(E.*(nu-1.0./2.0).*(-sin(y)+exp(y).*tanh(x)+sin(y).*(tanh(x).^2-1.0)))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*exp(y).*tanh(x).*(tanh(x).^2-1.0).*(nu-1.0).*2.0)./((nu.*2.0-1.0).*(nu+1.0));
-    g2 = (E.*(exp(y).*(tanh(x).^2-1.0)-cos(y).*tanh(x).*(tanh(x).^2-1.0).*2.0).*(nu-1.0./2.0))./((nu.*2.0-1.0).*(nu+1.0))+(E.*(sin(y)-exp(y).*tanh(x)).*(nu-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0));
+   %grad_ue{1} = [partial_u1/partial_x , partial_u1/partial_y ]
+   %grad_ue{2} = [partial_u2/partial_x , partial_u2/partial_y ]
+   %    strain = [partial_u1/partial_x, partial_u1/partial_y, 1/2*(partial_u2/partial_x + partial_u1/partial_y)]   
+   strain = [grad_ue{1}(:,1), grad_ue{2}(:,2), 0.5*(grad_ue{2}(:,1)+grad_ue{1}(:,2))];     
+    
+   %stress (sigma) = (strain/stress matrix)* strain 
+   sigma = strain*C';
+        
+   g1 = -(E.*(nu-1.0./2.0).*(-sin(y)+exp(y).*tanh(x)+sin(y).*(tanh(x).^2-1.0)))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*exp(y).*tanh(x).*(tanh(x).^2-1.0).*(nu-1.0).*2.0)./((nu.*2.0-1.0).*(nu+1.0));
+   g2 = (E.*(exp(y).*(tanh(x).^2-1.0)-cos(y).*tanh(x).*(tanh(x).^2-1.0).*2.0).*(nu-1.0./2.0))./((nu.*2.0-1.0).*(nu+1.0))+(E.*(sin(y)-exp(y).*tanh(x)).*(nu-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0));
 
-    f0{1} = rho*g1;
-    f0{2} = rho*g2;
+   f0{1} = -g1;
+   f0{2} = -g2;
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%% Do NOT for get the 1/2 for strain matrix%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   f1{1} = sigma(:,1:2);
+   f1{2} = sigma(:,2:3);
     
-    C =(E/((1+nu)*(1-2*nu)))*[1-nu, nu, 0;
-                             nu,1-nu,0 ;
-                             0 ,0 ,(1-2*nu)/2];
-    
-%     f1=cell(1,size(grad_ue,2));
-%     for  j=1:size(grad_ue,2)
-%         f1{j} = 0*grad_ue{j};
-%     end
-    
-    f00=0;
-    f01=0;
-    f10=0;
-    f11=0;
+   %fix this for consistent tangent
+   f00=0;
+   f01=0;
+   f10=0;
+   f11=0;
     
        
              
