@@ -115,6 +115,9 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
    
    f00{1}=zeros(size(f0{1}));
    f00{2}=zeros(size(f0{2}));
+   f00{3}=zeros(size(f0{1}));
+   f00{4}=zeros(size(f0{2}));
+   
    f01=0;
    f10=0;
    f11=0;
