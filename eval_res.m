@@ -1,4 +1,4 @@
-function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
+function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
 % EVAL_RES evaluates the global residual and the Jacobian
 %  input:              u: vector of unknowns 
 %       : global_idx_map: global map of local u's
@@ -40,8 +40,11 @@ function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
                
      for i=1:num_elem
          
-         %get numBr of dof for each element
-         neldof = size(conn(i,:),2)*sz_global_idx_map;
+         %get number of dof per unknown u_i per element
+         neldof_per_ui = size(conn(i,:),2);
+         
+         %get total number of dof per element
+         neldof = neldof_per_ui*sz_global_idx_map;
           
          %get corresponding vertex coordinates for each element 
          element_vtx_coords = vtx_coords(conn(i,:),:);
@@ -57,26 +60,25 @@ function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          
          grad_ue=cell(1,size(Di,2));
          for  j=1:size(Di,2)
-             grad_ue{j}=Di{j}*elem_u;
+             for k = 1:size(elem_u,2)
+                 grad_ue{j}(:,k)=Di{k}*elem_u(:,k);
+             end
          end
-                  
+        
          mp_qd_pts= B*element_vtx_coords;
          
         [f0,f1,f00, f01, f10, f11] = userf(ue, grad_ue,mp_qd_pts); 
                  
          %get Gauss Weights for the current element
          W = W_hat.*dets';
-                  
-         D_res = zeros(size(f1{1}));
-         wf1 = zeros(size(f1{1}));
-         for j=1:size(Di,2)
-             for k=1:size(f1,2)
-                 wf1(:,k) = W.*f1{j}(:,k);
-             end            
-                 D_res = D_res + Di{j}'*wf1;
-         end
          
-          
+         D_res = zeros(size(f1{1}));         
+         for j=1:size(Di,2)
+             for k = 1:size(f1{1},2)
+                 D_res(:,k) = D_res(:,k) + Di{j}'*(W.*f1{j}(:,k));
+             end
+         end 
+         
          wf0 = zeros(size(f0{1},1), size(f0,2));
          for k=1:size(f0,2)
              wf0(:,k) = W.*f0{k};
@@ -85,38 +87,39 @@ function [global_res , jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          % element residual evaluation
          res_e = B'*wf0 + D_res;
                       
-         %element jac_e constituents
-         f0u = B'*diag(W.*f00)*B;
-         
-         f01TD =0;
-         for j=1:size(Di,2) 
-            f01TD = f01TD + diag(f01{j})*Di{j};
-         end
-         f0gu = B'*diag(W)*f01TD;
-         
-         f1u = 0;
-         for j=1:size(Di,2) 
-            f1u = f1u + Di{j}'*diag(W.*f10{j})*B;
-         end
-         
-         f1gu = 0;
-         for j=1:size(Di,2)
-            f1gu = f1gu + Di{j}'* diag(W.*f11{j})*Di{j}; 
-         end
-         
-         % element consistant tnagent evaulation (jac_e)
-         jac_e = f0u + f0gu + f1u + f1gu;           
+%          %element jac_e constituents
+%          f0u=zeros(neldof,neldof);
+%          f0u = B'*diag(W.*f00)*B;
+%          
+%          f01TD =0;
+%          for j=1:size(Di,2) 
+%             f01TD = f01TD + diag(f01{j})*Di{j};
+%          end
+%          f0gu = B'*diag(W)*f01TD;
+%          
+%          f1u = 0;
+%          for j=1:size(Di,2) 
+%             f1u = f1u + Di{j}'*diag(W.*f10{j})*B;
+%          end
+%          
+%          f1gu = 0;
+%          for j=1:size(Di,2)
+%             f1gu = f1gu + Di{j}'* diag(W.*f11{j})*Di{j}; 
+%          end
+%          
+%          % element consistant tnagent evaulation (jac_e)
+%          jac_e = f0u + f0gu + f1u + f1gu;           
          
          % global residual and jacobian assembly 
          temp=conn(i,:)';
-         k=1:neldof;
+         k=1:neldof_per_ui;
          kk=temp(k);
-         in_glb = global_idx_map(kk);
-         kk =in_glb(in_glb~=0);
+         in_glb = global_idx_map(kk,:);
+         kk =in_glb(in_glb>=0);
          %global residual
-         global_res(kk) = global_res(kk)+ res_e(in_glb~=0); 
+         global_res(kk) = global_res(kk)+ res_e(in_glb>=0); 
          %global jacobian 
-         jac(kk,kk)=jac(kk,kk)+jac_e(in_glb~=0, in_glb~=0);              
+         %jac(kk,kk)=jac(kk,kk)+jac_e(in_glb~=0, in_glb~=0);              
     
      end
 end
