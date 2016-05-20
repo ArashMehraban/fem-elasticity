@@ -1,15 +1,14 @@
-function [u, global_idx_map] = preproc(sz_vtx_coords,known_bd)
-    
-    field_sz = size(known_bd,1);
-       
-    u_section = ones(sz_vtx_coords,field_sz+1);
-    u_section(:,1:3:end) =-1;
-    for i=1:field_sz
+function [u, global_idx_map] = preproc(sz_vtx_coords,known_bd,sz_u_field)
+           
+    u_section = ones(sz_vtx_coords,sz_u_field+1);
+    u_section(:,1:(sz_u_field+1):end) =-1;
+    %place a zero for nodes that are on boundary
+    for i=1:size(known_bd,1)
         u_section(known_bd{i},1) = 0;
     end
     
     u_sz = -sum(sum(u_section(:,1)));
-    u = zeros(u_sz*field_sz,1);
+    u = zeros(u_sz*sz_u_field,1);
     
     for i=1:size(u_section,1)
         if(u_section(i,1) == 0)
