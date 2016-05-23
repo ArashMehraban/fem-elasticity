@@ -36,6 +36,7 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
      %get element type    
      elm_type = msh.num_nodes_per_elem; 
      %get Weights, Basis (B) functions and their Derivatives (D0, D1 and D2)
+     % D = partial_B/partial_x_i
      [B, Ds, W_hat] = get_shape(elm_type);
                
      for i=1:num_elem
@@ -56,15 +57,17 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          [dets, invJe] = jacobian(element_vtx_coords, Ds);         
          Di = get_elem_dirv(invJe, Ds);
                  
-         ue = B*elem_u;
+         % ue structure [B*u1, Bu*u2, B*u3]
+         ue = B*elem_u;         
          
+         % grad_ue structure: [[Di0*u1, Di0*u2], [Di1*u1, Di1*u2], [Di2*u1, Di2*u2]]
          grad_ue=cell(1,size(Di,2));
          for  j=1:size(Di,2)
-             for k = 1:size(elem_u,2)
-                 grad_ue{j}(:,k)=Di{k}*elem_u(:,k);
-             end
+             grad_ue{j}=Di{j}*elem_u;
          end
+
         
+         % mapped quadrature points to reference coordinate system
          mp_qd_pts= B*element_vtx_coords;
          
         [f0,f1,f00, f01, f10, f11] = userf(ue, grad_ue,mp_qd_pts); 
@@ -72,12 +75,14 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          %get Gauss Weights for the current element
          W = W_hat.*dets';
          
-         D_res = zeros(size(f1{1}));         
+         D_res = zeros(size(f1{1})); 
+         wf1 = zeros(size(f1{1}));
          for j=1:size(Di,2)
-             for k = 1:size(f1{1},2)
-                 D_res(:,k) = D_res(:,k) + Di{j}'*(W.*f1{j}(:,k));
-             end
-         end 
+             for k=1:size(f1{1},2)
+                 wf1(:,k) = W.*f1{j}(:,k);
+             end            
+                 D_res = D_res + Di{j}'*wf1;
+         end
          
          wf0 = zeros(size(f0{1},1), size(f0,2));
          for k=1:size(f0,2)
