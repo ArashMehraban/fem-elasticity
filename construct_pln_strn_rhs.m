@@ -5,10 +5,10 @@ function [g1,g2] = construct_pln_strn_rhs()
    u{1}=@(x,y)tanh(x).*exp(y)+sin(y);
    u{2}=@(x,y)tanh(x).*cos(y); 
  
-   syms x y nu E G
+   syms x y nu E 
    
    C =(E/((1+nu)*(1-2*nu)))*[1-nu, nu, 0; nu,1-nu,0 ; 0 ,0 ,0.5*(1-2*nu)];   
-   strain = [diff(u{1},x) ; diff(u{2},y) ; diff(u{2},x) + diff(u{1},y)];
+   strain = [diff(u{1},x) ; diff(u{2},y) ; 0.5*(diff(u{2},x) + diff(u{1},y))];
    
    sigma = C * strain;
    

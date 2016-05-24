@@ -1,9 +1,9 @@
-function [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes)
+function [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes, mesh_dim, given_u)
 % Use GET_EXCAT_SOL function to construct Diricklet Boundary values
 % at specifed Dirchlet boundary nodes passed to GET_EXCAT_SOL     
 
     %get the exact solution from constructed equations at each node/field
-    exactSol = exactf(vtx_coords);
+    exactSol = exactf(vtx_coords, mesh_dim, given_u);
               
     dir_bndry_val = cellfun(@(x) x,dir_bndry_nodes,'un',0);
     

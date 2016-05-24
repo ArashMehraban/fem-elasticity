@@ -1,14 +1,19 @@
 function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
 %USERF provides weak form of the problem to solve 
 
-%  input: ue: corresponding u for each element evalauted at quadrature points
+%  input:      ue: corresponding u for each element evalauted at quadrature points
 %       : grad_ue: corresponding grad_u for each element evalauted at quadrature points (cell not matrix)
-%       : xe: quadrature points mapped in the reference elem
+%       :      xe: quadrature points mapped to the reference elem
 %
 % output: f0: any possible source from given problem
 %       : f1: any possible source from given problem
-     x=xe(:,1);
-     y=xe(:,2);
+
+    x=xe(:,1);
+    y=xe(:,2);
+    if(size(xe,2) == 3)
+        z = xe(:,3);
+    end
+    
      
      
 %         % For L2-Projection problem:
@@ -99,8 +104,8 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
    %stress (sigma) = (strain/stress matrix)*strain 
    sigma = strain*C';
    
-   g1= -(E.*(nu-1.0./2.0).*(-sin(y)+exp(y).*tanh(x)+sin(y).*(tanh(x).^2-1.0)))./((nu.*2.0-1.0).*(nu+1.0))+(E.*nu.*sin(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*exp(y).*tanh(x).*(tanh(x).^2-1.0).*(nu-1.0).*2.0)./((nu.*2.0-1.0).*(nu+1.0));
-   g2= (E.*(exp(y).*(tanh(x).^2-1.0)-cos(y).*tanh(x).*(tanh(x).^2-1.0).*2.0).*(nu-1.0./2.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))+(E.*cos(y).*tanh(x).*(nu-1.0))./((nu.*2.0-1.0).*(nu+1.0));
+   g1= -(E.*(nu-1.0./2.0).*(sin(y).*(-1.0./2.0)+exp(y).*tanh(x).*(1.0./2.0)+sin(y).*(tanh(x).^2-1.0).*(1.0./2.0)))./((nu.*2.0-1.0).*(nu+1.0))+(E.*nu.*sin(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*exp(y).*tanh(x).*(tanh(x).^2-1.0).*(nu-1.0).*2.0)./((nu.*2.0-1.0).*(nu+1.0));
+   g2= (E.*(exp(y).*(tanh(x).^2-1.0).*(1.0./2.0)-cos(y).*tanh(x).*(tanh(x).^2-1.0)).*(nu-1.0./2.0))./((nu.*2.0-1.0).*(nu+1.0))-(E.*nu.*exp(y).*(tanh(x).^2-1.0))./((nu.*2.0-1.0).*(nu+1.0))+(E.*cos(y).*tanh(x).*(nu-1.0))./((nu.*2.0-1.0).*(nu+1.0));
    
 
    f0{1} = g1;
