@@ -1,5 +1,5 @@
 function global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map)
-%SETBDRY_DIR returns a the global_u that includes Dichlet Boundary values
+%GET_GLOBAL_U returns a the global_u that includes Dirichlet Boundary values
      
     sz_global_u = size(global_idx_map);
     global_u =zeros(sz_global_u);

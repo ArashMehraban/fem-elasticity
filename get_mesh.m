@@ -1,37 +1,38 @@
 function msh = get_mesh(filename, ext, varargin)
-%GET_MESH receives an exodus format file (.exo or .e) as input and
+%GET_MESH function receives an exodus format file (.exo or .e) as input and
 %returns as output a mesh object that can be used in MATLAB with finite
-%element code. The mesh object contains:
+%element code. The output mesh object contains:
 %
-% vtx_coords    : vertex coordinates for all nodes in the mesh
-% conn          : connectivity matrix
-% num_elem           : number of elements
+% vtx_coords        : vertex coordinates for all nodes in the mesh
+% conn              : connectivity matrix for vtx_coords
+% num_elem          : number of elements
 % num_nodes_per_elem: number of nodes per element
-% num_nodes     : total number of nodes
-% num_dims      : dimension of the problem (2 = 2D or 3 = 3D)
-% num_node_sets : number of node sets
-% num_side_sets : number of side sets
-% node_ns(i)    : (i) indicates multiple sets. node_ns1 means node set 1
-% side_ss(i)    : (i) indicates multiple sets. side_ss1 means side set 1
-% elem_ss(i)    : (i) indicates multiple sets. elem_ss1 means elements set 1
-%               : elem_ss corresponds to side_ss. Example: elem_ss1
-%                 contains the elements that have side_ss1 
-% side_ss(i)_nodes: (i) indicates multiple sets. side_ss_nodes returns the
-%                   nodes that are on each entry in side_ss 
+% num_nodes         : total number of nodes
+% num_dims          : number of dimensions for mesh (2 = 2D or 3 = 3D)
+% num_node_sets     : number of node sets
+% num_side_sets     : number of side sets
+% node_ns(i)        : (i) indicates multiple sets. node_ns1 means node set 1
+% side_ss(i)        : (i) indicates multiple sets. side_ss1 means side set 1
+% elem_ss(i)        : (i) indicates multiple sets. elem_ss1 means elements set 1
+%                   : elem_ss corresponds to side_ss. Example: elem_ss1
+%                     contains the elements that have side_ss1 
+% side_ss(i)_nodes  : (i) indicates multiple sets. side_ss_nodes returns the
+%                     nodes that are on each entry in side_ss 
 %
-% Mesh ordering may be reordered lexicographically by the user if needed using
-% the keyword 'lex' as input parameter described below.
+% Note: This code handles 1 block element type only!! For more info about blocks, 
+% refer to cubit manuals (keyword: num_el_blk).
 %
-% WARNING: This code is desinged (and tested) to handle exodus files produced by cubit 12.1
-% It should work with higher versions of cubit, but not with element types
-% other than:
+% WARNING: This code is desinged (and tested) to handle exodus files 
+% produced by cubit 12.1 only. It is expected to work with higher versions of
+% cubit. This code can handle the following element types output by cubit:
 % 1)  4-noded QAUD element (QUAD4 in cubit: 2D element)
 % 2)  9-noded QAUD element (QUAD9 in cubit: 2D element)
-% 3)  8-noded HEX element (HEX8 in cubit: 3D element)
-% 4) 27-noded HEX element (HEX27 in cubit: 3D element)
-% 
-% WARNING: This code handles 1 block element type only!! For more info about blocks, 
-% refer to cubit manuals (keyword: num_el_blk).
+% 3)  8-noded HEX element  ( HEX8 in cubit: 3D element)
+% 4) 27-noded HEX element  (HEX27 in cubit: 3D element)
+%
+%
+% Mesh ordering may be reordered lexicographically by the user if desired using
+% the keyword 'lex' as an optional input parameter described below:
 % 
 % inputs: (necessary): filename 
 %       : (necessary): ext (file extension) 
@@ -49,6 +50,7 @@ function msh = get_mesh(filename, ext, varargin)
 % Developed by Arash Mehraban, University of Colorado, Boulder (April 2016)
 
 
+
     %open exodus file
     if(~(strcmp(ext,'exo') || strcmp(ext,'e')))
         error('Wrong file format input. get_mesh can read .exo and .e files only!!')
@@ -60,7 +62,7 @@ function msh = get_mesh(filename, ext, varargin)
     % netCDF files have three header sections:
     % 1) dimensions
     % 2) variables
-    % 3) attributes (global) (Not needed/extracted for GET_MESH function)
+    % 3) attributes (global) (Not needed/extracted for get_mesh function)
 
     %get the number of dimensions and variables 
     [numdims, numvars, ~, ~] = netcdf.inq(ncid);

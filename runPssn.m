@@ -1,4 +1,4 @@
-%Solving Plane Strain problem using FEM with unstructured mesh
+%Solving Poisson problem using FEM with unstructured mesh
 clear
 clc
 format short
@@ -11,10 +11,10 @@ h = zeros(1,12);
 for i= 1:1 
     %disk9_4e
     %cylinder8
-    filename = 'disk9_4e';
+    filename = 'disk9_4e_1ns';
     ext='exo';
     
-    sz_u_field = 2;
+    sz_u_field = 1;
    
     %get mesh information from exodus (.exo or .e) file
     msh = get_mesh(filename,ext,'lex');
@@ -24,7 +24,7 @@ for i= 1:1
     
     %get number of nodes in mesh
     num_nodes = msh.num_nodes;  
-    
+        
     %get the known u vector and global to local mapping foe each u
     [u, global_idx_map] = preproc(num_nodes,dir_bndry_nodes,sz_u_field);
     
@@ -39,10 +39,9 @@ for i= 1:1
    
     iter=1;
     norm_iter=1;
-    while((global_res_norm > 1.0e-9) && iter <10 )
+    while((global_res_norm > 1.0e-9) && iter <3 )
         
         [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val);
-          
                                        
         global_res_norm = norm(global_res);
         if(global_res_norm < 1.0e-9)
