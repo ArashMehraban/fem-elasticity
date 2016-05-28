@@ -165,8 +165,8 @@ function msh = get_mesh(filename, ext, varargin)
                     4 3;
                     3 1];
         elseif((num_node_per_elem == 9))
-            lex_conn = [1 5 2 8 9 6 4 7 3]; %used originally
-            %lex_conn = [ ];
+            %lex_conn = [1 5 2 8 9 6 4 7 3]; %used originally
+            lex_conn = [1 5 2 8 9 6 4 7 3];
             % Side Set Node Ordering (indecies)
             QUAD = [1 2 3;
                     3 6 9;

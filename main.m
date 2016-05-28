@@ -8,7 +8,7 @@ function u = main(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
            
     global_res_norm=1;
     iter=1;
-    max_iter = 5;
+    max_iter = 3;
     gl_res_norm = zeros(max_iter,1);
     gl_res_norm_iter = 1;
     while((global_res_norm > 1.0e-9) && iter < max_iter)
@@ -30,8 +30,9 @@ function u = main(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
         fun = @(u)eval_res(u, global_idx_map, msh, dir_bndry_val);
                
         options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
+        %options = optimoptions(@fsolve,'Algorithm','trust-region-reflective');
                 
-        u = fsolve(fun, global_res)% options); 
+        u = fsolve(fun, global_res, options); 
         iter=iter+1;
     end  
       

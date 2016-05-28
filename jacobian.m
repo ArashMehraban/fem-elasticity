@@ -24,7 +24,7 @@ function  [detsJe, invJe] = jacobian(elem_vtx_coords, Ds)
       for i=1:num_gs_pts
           invJe{i}=inv([JD0(i:size(D0,1):end),JD1(i:size(D1,1):end)]);
           detsJe(i)=det([JD0(i:size(D0,1):end),JD1(i:size(D1,1):end)]);
-          if(detsJe < 0)
+          if(detsJe(i) < 0)
               error('Defective element! Negative determinant in Jacobian');
           end
       end
@@ -40,7 +40,7 @@ function  [detsJe, invJe] = jacobian(elem_vtx_coords, Ds)
       for i=1:num_gs_pts
           invJe{i}=inv([JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end),JD2(i:num_gs_pts:end)]);
           detsJe(i)=det([JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end),JD2(i:num_gs_pts:end)]);
-          if(detsJe < 0)
+          if(detsJe(i) < 0)
               error('Defective element! Negative determinant in Jacobian');
           end
       end

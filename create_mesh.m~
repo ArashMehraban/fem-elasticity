@@ -217,19 +217,19 @@ end
 %  Boundary Nodes (Q1) or (Q2)  %
 %===============================%
                 
-      bottom_nodes = msh(1,1:end)';
-      top_nodes = msh(end,1:end)';
+      bottom_nodes = msh(1,1:end);
+      top_nodes = msh(end,1:end);
       right_nodes = msh(:,end);
       left_nodes = msh(:,1);
        
-%       
-%       
-%       bndry_nodes = unique([bottom_nodes,right_nodes',left_nodes',top_nodes]);
-%       if (nargout > 4)
-%          name = {'bottom', 'right', 'left', 'top'};
-%          nodes = {bottom_nodes,right_nodes',left_nodes',top_nodes};
-%          geometry = struct(name{1}, nodes{1}, name{2}, nodes{2},name{3}, nodes{3},name{4}, nodes{4});
-%       end
+      
+      
+      bndry_nodes = unique([bottom_nodes,right_nodes',left_nodes',top_nodes]);
+      if (nargout > 4)
+         name = {'bottom', 'right', 'left', 'top'};
+         nodes = {bottom_nodes,right_nodes',left_nodes',top_nodes};
+         geometry = struct(name{1}, nodes{1}, name{2}, nodes{2},name{3}, nodes{3},name{4}, nodes{4});
+      end
       
       num_elem = size(conn,1);
       num_node_per_elem = 9;
