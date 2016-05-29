@@ -5,7 +5,7 @@ function [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes, g
     %get the exact solution from constructed equations at each node/field
     exactSol = exactf(vtx_coords, given_u);
               
-    dir_bndry_val = cellfun(@(x) x,dir_bndry_nodes,'un',0);
+    dir_bndry_val = cellfun(@(x) 0*x,dir_bndry_nodes,'un',0);
     
     % get the number of dir_bndry_nodes sets
     sz_dir_ns = size(dir_bndry_nodes,1);

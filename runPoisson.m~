@@ -7,21 +7,9 @@ format short
 %  filenames{1} = 'square9_4e_s';
 %  filenames{2} = 'square9_16e_s';
 %  filenames{3} = 'square9_36e_s';
-% 
-%   filenames{1} = 'disk9_4e';  
-%   filenames{2} = 'disk9_118e';
-%   filenames{3} = 'disk9_274e';
-%  filenames{4} = 'disk9_641e';
 
-%   filenames{1} = 'cylinder8_110e_us';
-%   filenames{2} = 'cylinder8_368e_us';
-%   filenames{3} = 'cylinder8_1176e_us';  
-
-  filenames{1} = 'cylinder27_64e_us';
-  filenames{2} = 'cylinder27_110e_us';
-  filenames{3} = 'cylinder27_1176e_us'; 
-
-  ext = 'exo';
+ filenames{1} = 'disk9_4e'; 
+ext = 'exo';
 
 sz_u_field = 1;
 
@@ -36,8 +24,8 @@ for i=1:size(filenames,2)
     dir_bndry_nodes = get_all_dir_ns(msh);
     
     %NOTE: modify userf function according to given_u
-    %given_u{1}=@(x,y)tanh(x).*exp(y)+sin(y);
-    given_u{1}=@(x,y,z)tanh(x).*exp(y)+sin(y)+cos(z);
+    given_u{1}=@(x,y)tanh(x).*exp(y)+sin(y);
+
         
     %Construct manufactured solution:
     %========================================================================================%

@@ -42,24 +42,23 @@ function Di = get_elem_dirv(invJe, Ds)
     end
     
     invJe = cell2mat(invJe);
-    blocksz = size(invJe,2)/size(D0,1); 
+
+    blocksz = size(invJe,2)/size(D0,1);
+    block_invJe = [invJe(:, 1:blocksz:end) ; invJe(:, 2:blocksz:end)]';
+   
     
     %2D  
     if(D_sz == 2)
-        block_invJe = [invJe(:, 1:blocksz:end) ; invJe(:, 2:blocksz:end)]';
         Di{1} = diag(block_invJe(:,1))*D0 + diag(block_invJe(:,2))*D1;
         Di{2} = diag(block_invJe(:,3))*D0 + diag(block_invJe(:,4))*D1; 
     end
     
     
-    
+    %=================FIX THIS FOR 3D==================================%
     %3D
     if(D_sz == 3)
-        block_invJe = [invJe(:, 1:blocksz:end) ; invJe(:, 2:blocksz:end); invJe(:, 3:blocksz:end)]';
-        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D1 + diag(block_invJe(:,3))*D2;
-        Di{2} = diag(block_invJe(:,4))* D0 + diag(block_invJe(:,5))*D1 + diag(block_invJe(:,6))*D2;
-        Di{3} = diag(block_invJe(:,7))* D0 + diag(block_invJe(:,8))*D1 + diag(block_invJe(:,9))*D2;
+        Di{3} = diag(block_invJe(:,5))* D2 + diag(block_invJe(:,6))*D2;                
     end
-    
+    %==================================================================%
 
 end

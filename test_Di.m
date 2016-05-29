@@ -3,8 +3,8 @@
 clear
 clc
 
-% u=@(x,y) y.*sin(x)+ x.*cos(y);
-u=@(x,y) x + y;
+ u=@(x,y) y.*sin(x)+ x.*cos(y);
+%u=@(x,y) x + y;
 syms x y
 u_dx = matlabFunction(diff(u,x));
 u_dy = matlabFunction(diff(u,y));
@@ -36,8 +36,8 @@ gs_pts = [x(1), -x(2); -x(1), -x(2);x(1), x(2);-x(1), x(2) ];
 x = gs_pts(:,1);
 y = gs_pts(:,2);
 
-ux = u_dx(x);
-uy = u_dy(y);
+ux = u_dx(x,y);
+uy = u_dy(x,y);
 diff_x = Dx - ux;
 diff_y = Dy - uy;
 

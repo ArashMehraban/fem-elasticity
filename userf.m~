@@ -68,7 +68,6 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
      f11{1} = ones(size(f1{1},1),1);
      f11{2} = ones(size(f1{1},1),1);
    end
-   
    if(sz_dim == 3)
      %2D  
      %Poisson eqn:
@@ -77,7 +76,7 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
      f0{1} =  0*ue -g; 
      f1{1} = grad_ue{1};
      f1{2} = grad_ue{2};
-     f1{3} = grad_ue{3};
+     f1{3} = gradue{3};
      %=====================================================%
        
      %f0 = @(ue, grad_ue) ue-g;
@@ -86,16 +85,13 @@ function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
      %f_i,0 = partial(f_i)/partial(ue)
      f00{1} = zeros(size(f0{1},1),1);
      f10{1} = zeros(size(f1{1},1),1); 
-     f10{2} = zeros(size(f1{2},1),1); 
-     f10{3} = zeros(size(f1{3},1),1);
+     f10{2} = zeros(size(f1{1},1),1); 
      
      %f_i,1 = partial(f_i)/partial(gradue)
-     f01{1} = zeros(size(f1{1},1),1);   
-     f01{2} = zeros(size(f1{2},1),1);
-     f01{3} = zeros(size(f1{3},1),1);
+     f01{1} = zeros(size(f0{1},1),1);   
+     f01{2} = zeros(size(f1{1},1),1);
      f11{1} = ones(size(f1{1},1),1);
-     f11{2} = ones(size(f1{2},1),1);
-     f11{3} = ones(size(f1{3},1),1);
+     f11{2} = ones(size(f1{1},1),1);
    end
    
    
