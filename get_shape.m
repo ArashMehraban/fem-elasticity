@@ -3,14 +3,14 @@ function [B, Ds, W_hat] = get_shape(elm_type)
 %     2D elements: 4: QUAD4  or  9: QUAD9
 %     3D elements: 8: HEX8   or 27: HEX27 
 %
-% input: elm_type: Element type
-%
-%         eta                     eta 
-%          |                       |
-%   2D:    |______ xi   or    3D:  |_____ xi
-%                                 /
-%                                /  
-%                             zeta
+% input: elm_type: Element type 
+%        (+ shows the positive direction)
+%                                  +
+%          +                     zeta  +   
+%         eta                      |  /eta
+%          |                       | /
+%   2D:    |______ xi + or    3D:  |/__ __ __ xi +
+%                                 
 % 2D:
 % output: shape object that contains:
 %       : B: Basis/Shape functions evaluted at quadrature points.
@@ -27,7 +27,6 @@ function [B, Ds, W_hat] = get_shape(elm_type)
 %    bHat: Shape/Basis functions in 1D
 %    dHat: Derivative of shape/basis functions in 1D
 %        Kronecker Product = (K)
-% Note: Tensor product order changes form 2D to 3D cases.
 %         2D                       3D
 %   ------------------     --------------------------       
 %   D0 = bHat (k) dHat     D0 = bHat (K) bHat (K) dHat   
