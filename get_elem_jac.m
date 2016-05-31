@@ -28,12 +28,17 @@ function  [detsJe, invJe] = get_elem_jac(elem_vtx_coords, Ds)
 
   invJe = zeros(D_sz*num_gs_pts,D_sz); 
   detsJe=zeros(num_gs_pts,1);
-    
+  
   %2D
+   
+  % structure of Je per quadrature point:
+  % Je = [partial_x/partial_xi , partial_x/partial_eta]
+  %      [partial_y/partial_xi , partial_y/partial_eta]
+    
    if(D_sz == 2 )        
       idx = 2*(1:num_gs_pts)-1;
       for i=1:num_gs_pts
-          tmpJe = [JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end)]';
+          tmpJe = [JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end)];
           invJe(idx(i):idx(i)+D_sz-1,:)=inv(tmpJe);
           detsJe(i)=det(tmpJe);
           if(detsJe(i) < 0)
@@ -43,13 +48,18 @@ function  [detsJe, invJe] = get_elem_jac(elem_vtx_coords, Ds)
    end
    
   %3D
+  
+  % structure of Je per quadrature point:
+  % Je = [partial_x/partial_xi , partial_x/partial_eta, partial_x/partial_zeta]
+  %      [partial_y/partial_xi , partial_y/partial_eta, partial_y/partial_zeta]
+  %      [partial_z/partial_xi , partial_z/partial_eta, partial_z/partial_zeta]
   if(D_sz == 3)            
       JD2 = D2*elem_vtx_coords;
       JD2=JD2(:);
       
       idx = 3*(1:num_gs_pts)-2;
       for i=1:num_gs_pts
-          tmpJe = [JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end),JD2(i:num_gs_pts:end)]';
+          tmpJe = [JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end),JD2(i:num_gs_pts:end)];
           invJe(idx(i):idx(i)+D_sz-1,:)=inv(tmpJe);
           detsJe(i)=det(tmpJe);
           if(detsJe(i) < 0)
