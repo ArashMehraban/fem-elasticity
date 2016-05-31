@@ -11,28 +11,22 @@ function Di = get_elem_dirv(invJe, Ds)
 %
 %  output: Di: A cell-array of element derivative in directions i (1,2 or 3)
 
-
+   %For calculation:2D (same trend for 3D)
     % rearrange invJe to perform block matrix mutiplication
     % eg.                     
-    % invJe = [j1_11  j1_12 | j2_11  j2_12 | j3_11  j3_12 | j4_11 j4_12]
-    %         [j1_21  j1_22 | j2_21  j2_22 | j3_21  j3_22 | j4_21 j4_22] 
-    %
+    % invJe = [j1_11  j1_12]
+    %         [j1_21  j1_22] 
+    %         [j2_11  j2_12]
+    %         [j2_21  j2_22]
+    %         [j3_11  j3_12]
+    %         [j3_21  j3_22]
+    %         [j4_11  j4_12]
+    %         [j4_21  j4_22]
     % block_invJe = [j1_11  j1_12  j1_21  j1_22]
     %               [j2_11  j2_12  j2_21  j2_22]
     %               [j3_11  j3_12  j3_21  j3_22]
     %               [j4_11  j4_12  j4_21  j4_22]
-    
-    % rearrange invJe to perform block matrix mutiplication
-    % eg.
-    % invJe = [j1_11  j1_12  j1_13 | j2_11  j2_12  j2_13 | j3_11  j3_12  j3_13 | j4_11 j4_12 j4_13]
-    %         [j1_21  j1_22  j1_23 | j2_21  j2_22  j2_23 | j3_21  j3_22  j3_21 | j4_21 j4_22 j4_23] 
-    %         [j1_31  j1_32  j1_33 | j2_31  j2_32  j2_33 | j3_31  j3_32  j3_31 | j4_31 j4_32 j4_33]
-    %
-    % block_invJe = [j1_11  j1_12  j1_13  j1_21  j1_22  j1_23  j1_31  j1_32  j1_33]
-    %               [j2_11  j2_12  j2_13  j2_21  j2_22  j2_23  j2_31  j2_32  j2_33]
-    %               [j3_11  j3_12  j3_13  j3_21  j3_22  j3_23  j3_31  j3_32  j3_33]
-    %               [j4_11  j4_12  j4_13  j4_21  j4_22  j4_23  j4_31  j4_32  j4_33]
-    
+
     D_sz = size(fieldnames(Ds),1);
   
     D0 = Ds.D0;
@@ -41,41 +35,15 @@ function Di = get_elem_dirv(invJe, Ds)
        D2 = Ds.D2;
     end
     
-    %invJe = cell2mat(invJe);
     blocksz = size(invJe,1)/size(D0,1); 
-%     
-%     
-%     A =
-% 
-%      1     2
-%      3     4
-%      5     6
-%      7     8
-% 
-% A(1:2:end,:)
-% 
-% ans =
-% 
-%      1     2
-%      5     6
-% 
-% A(2:2:end,:)
-% 
-% ans =
-% 
-%      3     4
-%      7     8
-
-    
-
     
     %2D  
     
     % structure of invJe per quadrature point
     % invJe = [partial_xi/partial_x , partial_eta/partial_x]
     %         [partial_xi/partial_y , partial_eta/partial_y]
-    % \partial_x must be multiplied by D0
-    % \partial_y must be multiplied by D1
+    % entries with \partial_x must be multiplied by D0
+    % entries with \partial_y must be multiplied by D1
     if(D_sz == 2)
         block_invJe = [invJe(1:blocksz:end,:) ,  invJe(2:blocksz:end,:)];
         Di{1} = diag(block_invJe(:,1))*D0 + diag(block_invJe(:,3))*D1;
@@ -88,9 +56,9 @@ function Di = get_elem_dirv(invJe, Ds)
     % invJe = [partial_xi/partial_x , partial_eta/partial_x, partial_zeta/partial_x]
     %         [partial_xi/partial_y , partial_eta/partial_y, partial_zeta/partial_y]
     %         [partial_xi/partial_z , partial_eta/partial_z, partial_zeta/partial_z]
-    % \partial_x must be multiplied by D0
-    % \partial_y must be multiplied by D1
-    % \partial_z must be multiplied by D2
+    % entries with \partial_x must be multiplied by D0
+    % entries with \partial_y must be multiplied by D1
+    % entries with \partial_z must be multiplied by D2
     if(D_sz == 3)
         block_invJe = [invJe(1:blocksz:end,:) , invJe(2:blocksz:end,:), invJe(3:blocksz:end,:)];
         Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,4))*D1 + diag(block_invJe(:,7))*D2;
