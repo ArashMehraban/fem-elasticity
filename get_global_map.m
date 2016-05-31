@@ -1,4 +1,4 @@
-function [u, global_idx_map] = preproc(sz_vtx_coords,known_bd,sz_u_field)
+function [u, global_idx_map] = get_global_map(sz_vtx_coords,known_bd,sz_u_field)
            
     u_section = ones(sz_vtx_coords,sz_u_field+1);
     u_section(:,1:(sz_u_field+1):end) =-1;

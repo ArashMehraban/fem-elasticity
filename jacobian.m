@@ -38,7 +38,7 @@ function  [detsJe, invJe] = jacobian(elem_vtx_coords, Ds)
       JD2=JD2(:);
       
       for i=1:num_gs_pts
-          jac_tmp = [JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end),JD2(i:num_gs_pts:end)];
+          jac_tmp = [JD0(i:num_gs_pts:end),JD1(i:num_gs_pts:end),JD2(i:num_gs_pts:end)]';
           invJe{i}=inv(jac_tmp);
           detsJe(i)=det(jac_tmp);
           if(detsJe(i) < 0)

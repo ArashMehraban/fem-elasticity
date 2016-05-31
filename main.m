@@ -4,7 +4,7 @@ function u = main(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
     num_nodes = msh.num_nodes;  
     
     %get the known u vector and global to local mapping foe each u
-    [u, global_idx_map] = preproc(num_nodes,dir_bndry_nodes,sz_u_field);
+    [u, global_idx_map] = get_global_map(num_nodes,dir_bndry_nodes,sz_u_field);
            
     global_res_norm=1;
     iter=1;

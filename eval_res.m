@@ -1,5 +1,5 @@
 function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
-% EVAL_RES evaluates the global residual and the Jacobian
+% EVAL_RES evaluates the global residual and the consistent tangent
 %  input:              u: vector of unknowns 
 %       : global_idx_map: global map of local u's
 %       :            msh: mesh object (see get_mesh function)
@@ -54,7 +54,8 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          elem_u = global_u(conn(i,:),:);   
          
          %get mapping constituents from jacobian
-         [dets, invJe] = jacobian(element_vtx_coords, Ds);         
+         %[dets, invJe] = jacobian(element_vtx_coords, Ds);  
+         [dets, invJe] = get_elem_jac(element_vtx_coords, Ds);
          Di = get_elem_dirv(invJe, Ds);
                  
          % ue structure [B*u1, Bu*u2, B*u3]
@@ -72,7 +73,7 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
         [f0,f1,f00, f01, f10, f11] = userf(ue, grad_ue,mp_qd_pts); 
                  
          %get Gauss Weights for the current element
-         W = W_hat.*dets';
+         W = W_hat.*dets;
          
          
           De_res = 0;
