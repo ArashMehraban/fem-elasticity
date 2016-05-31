@@ -157,39 +157,37 @@ function msh = get_mesh(filename, ext, varargin)
         
         %node mapping for LEX ordering           
         if(num_node_per_elem == 4)
-            lex_conn = [1 2 4 3];
-            
+            lex_conn = [1 2 4 3];            
             % Side Set Node Ordering (indecies)
             QUAD = [1 2;
-                    2 4;
-                    4 3;
-                    3 1];
+                    2 3;
+                    3 4;
+                    4 1];
         elseif((num_node_per_elem == 9))
             lex_conn = [1 5 2 8 9 6 4 7 3]; %used originally
-            %lex_conn = [ ];
             % Side Set Node Ordering (indecies)
-            QUAD = [1 2 3;
-                    3 6 9;
-                    9 8 7;
-                    7 4 1];
+            QUAD = [1 5 2;
+                    2 6 3;
+                    3 7 4;
+                    4 8 1];
         elseif((num_node_per_elem == 8))
             lex_conn = [1 2 4 3 5 6 8 7];
             % Side Set Node Ordering (indecies)
             HEX = [1 2 5 6;
-                   2 4 6 8;
-                   4 3 8 7;
-                   1 5 3 7;
-                   1 3 2 4;
-                   5 6 7 8];
+                   2 3 6 7;
+                   3 4 7 8;
+                   1 5 4 8;
+                   1 4 2 3;
+                   5 6 8 7];
         elseif((num_node_per_elem == 27))
-            lex_conn = [1 3 9 7 19 21 27 25 2 6 8 4 10 12 18 16 20 24 26 22 11 15 17 13 5 23 14];
+            lex_conn = [1 9 2 12 22 10 4 11 3 13 26 14 24 21 25 16 27 15 5 17 6 20 23 18 8 19 7];
             % Side Set Node Ordering (indecies)
-            HEX = [1   2  3 10 11 12 19 20 21;
-                   3   6  9 12 15 18 21 24 27;
-                   9   8  7 18 17 16 27 26 25;
-                   1  10 19  4 13 22  7 16 25;
-                   1   4  7  2  5  8  3  6  9;
-                   19 20 21 22 23 24 25 26 27];
+            HEX = [1 9  2 13 26 14 5 17 6;
+                   2 10 3 14 25 15 6 18 7;
+                   3 11 4 15 27 16 7 19 8;
+                   1 13 5 12 24 20 4 16 8;
+                   1 12 4  9 22 11 2 10 3;
+                   5 17 6 20 23 18 8 19 7];
         end
         
         % permute conectivity matrix to LEX ordering 
