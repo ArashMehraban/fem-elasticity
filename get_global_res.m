@@ -1,4 +1,4 @@
-function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
+function [global_res, jac] = get_global_res(u, global_idx_map, msh, dir_bndry_val)
 % EVAL_RES evaluates the global residual and the consistent tangent
 %  input:              u: vector of unknowns 
 %       : global_idx_map: global map of local u's
@@ -7,7 +7,7 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
 %
 % output: global_res, jac
 
-     %get the numBr of elements
+     %get the number of elements
      num_elem = msh.num_elem; 
      
      %get connectivity matrix
@@ -53,8 +53,7 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          %get corresponding unknown/solution u for each element
          elem_u = global_u(conn(i,:),:);   
          
-         %get mapping constituents from jacobian
-         %[dets, invJe] = jacobian(element_vtx_coords, Ds);  
+         %get mapping constituents from element jacobian 
          [dets, invJe] = get_elem_jac(element_vtx_coords, Ds);
          Di = get_elem_dirv(invJe, Ds);
                  
@@ -70,7 +69,7 @@ function [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val)
          % mapped quadrature points to reference coordinate system
          mp_qd_pts= B*element_vtx_coords;
          
-        [f0,f1,f00, f01, f10, f11] = userf(ue, grad_ue,mp_qd_pts); 
+        [f0,f1,f00, f01, f10, f11] = get_userf(ue, grad_ue,mp_qd_pts); 
                  
          %get Gauss Weights for the current element
          W = W_hat.*dets;

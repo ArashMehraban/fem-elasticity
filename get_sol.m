@@ -1,4 +1,4 @@
-function u = main(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
+function u = get_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
     
     %get number of nodes in mesh
     num_nodes = msh.num_nodes;  
@@ -13,7 +13,7 @@ function u = main(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
     gl_res_norm_iter = 1;
     while((global_res_norm > 1.0e-9) && iter < max_iter)
         
-        [global_res, jac] = eval_res(u, global_idx_map, msh, dir_bndry_val);          
+        global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val);          
                                        
         global_res_norm = norm(global_res);
         if(global_res_norm < 1.0e-9)
@@ -27,7 +27,7 @@ function u = main(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val)
             end
         end
         
-        fun = @(u)eval_res(u, global_idx_map, msh, dir_bndry_val);
+        fun = @(u)get_global_res(u, global_idx_map, msh, dir_bndry_val);
                
         options = optimoptions(@fsolve,'Algorithm','trust-region-reflective','Jacobian','on');
         %options = optimoptions(@fsolve,'Algorithm','trust-region-reflective');

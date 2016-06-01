@@ -1,4 +1,4 @@
-function [f0, f1,f00, f01, f10, f11] = userf(ue, grad_ue, xe)
+function [f0, f1,f00, f01, f10, f11] = get_userf(ue, grad_ue, xe)
 %USERF provides weak form of the problem to solve 
 
 %  input:      ue: corresponding u for each element evalauted at quadrature points
