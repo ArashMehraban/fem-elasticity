@@ -1,3 +1,7 @@
+%+++++++++
+% Old L2 projection. Must be updated with new code!!
+%++++++++
+
 %Solving the L2 projection problem using FEM
 clear
 clc
