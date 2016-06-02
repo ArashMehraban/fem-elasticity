@@ -1,4 +1,14 @@
 function [u, global_idx_map] = get_global_map(sz_vtx_coords,known_bd,sz_u_field)
+%GET_GLOBAL_MAP returns the mapping that indicates where each solution u
+%must be placed in the global_residual vector. Boundary nodes are indicated
+%with a negative number
+%
+%input: sz_vtx_coords: size of vertex coordinate
+%     :      known_bd: list of Dirichlet boundary nodes
+%     :    sz_u_field: size of unknown field (eg. : for Poisson 1, and Plane Strain 2 )
+%
+%output:              u: A zero vector of unknowns. (its size is determined based on number of boundary nodes)
+%      : global_idx_map: A global map of all entries in global_residual
            
     u_section = ones(sz_vtx_coords,sz_u_field+1);
     u_section(:,1:(sz_u_field+1):end) =-1;
