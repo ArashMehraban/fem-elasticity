@@ -1,12 +1,16 @@
 function [f0, f1,f00, f01, f10, f11] = get_userf(ue, grad_ue, xe)
-%USERF provides weak form of the problem to solve 
-
+%GET_USERF provides weak form of the problem to solve 
+%
 %  input:      ue: corresponding u for each element evalauted at quadrature points
 %       : grad_ue: corresponding grad_u for each element evalauted at quadrature points (cell not matrix)
 %       :      xe: quadrature points mapped to the reference elem
 %
-% output: f0: any possible source from given problem
-%       : f1: any possible source from given problem
+% output:  f0: any possible source from given problem
+%       :  f1: any possible source from given problem
+%       : f00: partial of f0 wrt u (algebriac operations only)
+%       : f01: partial of f0 wrt grad_u (algebriac operations only)
+%       : f10: partial of f1 wrt u (algebriac operations only)
+%       : f11: partial of f1 wrt grad_u (algebriac operations only)
 
     x=xe(:,1);
     y=xe(:,2);
