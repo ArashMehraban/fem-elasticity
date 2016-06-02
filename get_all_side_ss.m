@@ -1,4 +1,7 @@
 function side_ss = get_all_side_ss(msh)
+%GET_ALL_SIDE_SS returns all sidesets in one cell array.
+%input: mesh
+%output: All elements sidesets
    
     fld_names = fieldnames(msh);
     ss_names = fld_names((strncmp(fld_names,'side_ss',7)));
