@@ -1,4 +1,7 @@
 function elem_ss = get_all_elem_ss(msh)
+%GET_ALL_ELEM_SS returns all elements corresponding to sidesets in one cell array.
+%input: mesh
+%output: All elements for sidesets
    
     fld_names = fieldnames(msh);
     elem_names = fld_names((strncmp(fld_names,'elem_ss',7)));
