@@ -1,4 +1,11 @@
 function files = get_files(folderName, file_name_list)
+%GET_FILES returns mesh files stored in folderName folder according to
+%the list of file names specified in file_name_list
+%
+%input:     folderName: the folder where mesh files are stored
+%     : file_name_list: list of filenames to be extracted from folderName
+%                        
+%output: mesh files from folderName specified in file_name_list
 
     files_in_folder = dir(folderName);
     all_files = {files_in_folder.name};
