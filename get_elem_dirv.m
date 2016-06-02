@@ -11,7 +11,7 @@ function Di = get_elem_dirv(invJe, Ds)
 %
 %  output: Di: A cell-array of element derivative in directions i (1,2 or 3)
 
-    %For calculation:2D (same trend for 3D)
+    % For calculation:2D (same trend for 3D)
     % rearrange invJe to perform block matrix mutiplication
     % eg.                     
     % invJe = [j1_11  j1_12]
