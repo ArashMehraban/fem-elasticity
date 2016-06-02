@@ -23,7 +23,7 @@ function [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes, g
     
     exactSol = reshape(exactSol',[],1);
 end
-
+% helper function for coordinate evaluation
 function exctSol = exactf(vtx_coords, given_u)
     
     x = vtx_coords(:,1);
