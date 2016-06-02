@@ -1,5 +1,12 @@
 function global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map)
 %GET_GLOBAL_U returns a the global_u that includes Dirichlet Boundary values
+%
+% input:                u: solution/unknown u
+%      : dir_bndry_nodes : Dirichlet boundary nodes
+%      :   dir_bndry_val : Dirichlet boundary values
+%      :  global_idx_map : global mapping of u
+%
+%output: global_u: global u that includes Dirichlet boundary values
      
     sz_global_u = size(global_idx_map);
     global_u =zeros(sz_global_u);
@@ -19,12 +26,4 @@ function global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map
         end
     end
     
-%     s = global_idx_map(4);
-%     i = 1:numel(global_idx_map);
-%     a = find(global_idx_map(i)>0);
-%     on_bndry = cell2mat(dir_bndry_nodes);
-%     j = 1:size(on_bndry,1);
-%     not_bndry = linspace(1,size(global_u,1),size(global_u,1));
-%     not_bndry(on_bndry(j))=[];
-%     global_u(not_bndry) = u;
 end
