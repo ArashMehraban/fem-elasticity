@@ -1,7 +1,7 @@
 function neg_laplacian_2d = construct_neg_laplacian_2d()
 %CONSTRUCT_NEG_LAPLACIAN_2D returns the negative Laplacian of u to be used
 %in get_userf function
-% input: none (inside this function)
+% input: none (inside this function below)
 % output: the negative laplacian of u below    
     u=@(x,y)tanh(x).*exp(y)+sin(y);
     
