@@ -10,7 +10,7 @@ II) Runnning Poisson problem with Dirichlet boundary condition only:
    1) Save all functions (.m files) starting with "get_" along with runPoisson.m
       in a folder in MATLAB path
 
-   2) save "mesh_Dirich_only" folder in the same folder as above in MATLAB path. 
+   2) Save "mesh_Dirich_only" folder in the same folder as above in MATLAB path. 
       Keep this in its own folder. The content of mesh folder must be separate 
       from .m files.
 
