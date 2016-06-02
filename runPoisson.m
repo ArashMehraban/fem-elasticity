@@ -2,31 +2,18 @@
 clear
 clc
 format short
-  
-% files{1} = {'disk9_4e', 'disk9_118e', 'disk9_274e', 'disk9_641e' };
-% files{2} = {'cylinder8_110e_us', 'cylinder8_368e_us', 'cylinder8_1176e_us', 'cylinder8_4180e_us' };
-files{1} = {'disk9_4e'};
-%filenames{1} = 'disk4_37e_us'; 
- % filenames{1} = 'square9_4e_s';
-%  filenames{2} = 'square9_16e_s';
-%  filenames{3} = 'square9_36e_s';
-% 
-%     filenames{1} = 'disk9_4e';  
-%   filenames{2} = 'disk9_118e';
-% filenames{3} = 'disk9_274e';
-%  filenames{4} = 'disk9_641e';
- 
- %filenames{1} = 'cylinder8_800e_s';
-%  filenames{1} = 'cylinder8_110e_us';
-%   filenames{2} = 'cylinder8_368e_us';
-%   filenames{3} = 'cylinder8_1176e_us';  
-%   filenames{4} = 'cylinder8_4180e_us';  
 
-  %   filenames{1} = 'cube27_27e_s';
-%   
-%   filenames{1} = 'cylinder27_64e_us';
-%   filenames{2} = 'cylinder27_110e_us';
-  %filenames{3} = 'cylinder27_1176e_us'; 
+file_name_list{1} = {'disk4_114e_us', 'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us','disk4_2598e_us' };
+file_name_list{2} = {'disk9_114e_us', 'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
+file_name_list{3} = {'cylinder8_110e_us', 'cylinder8_368e_us', 'cylinder8_1176e_us', ...
+                     'cylinder8_1635e_us','cylinder8_4180e_us' };
+file_name_list{4} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_368e_us', ...
+                     'cylinder27_630e_us','cylinder27_1428e_us' };
+folderName='mesh_Dirich_only';
+files = cell(file_name_list);
+for i=1:size(file_name_list,2)
+    files{i} = get_files(folderName, file_name_list{i});
+end
 
 for i=1:size(files,2)
     error = zeros(1,size(files{i},2));

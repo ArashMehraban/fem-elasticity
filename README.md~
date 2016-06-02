@@ -16,7 +16,7 @@ II) Runnning Poisson problem with Dirichlet boundary condition only:
 
    3) run runPoisson.m 
 
-   4) MATLAB should generate a plot that looks like jpg_runPoisson_Dirich.jpg 
+   4) MATLAB should generate a plot that looks like jpg_runPoisson.jpg 
 
  Note: The u's in runPoisson.m are the solutions of Poisson PDE in 2d and 3D that 
        have been constructed using construct_neg_laplacian2d.m and 
