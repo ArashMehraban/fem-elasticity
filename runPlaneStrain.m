@@ -1,3 +1,7 @@
+%+++++++++
+% Old Plane Strain. Must be updated with new code!!
+%++++++++
+
 %Solving Plane Strain problem using FEM with unstructured mesh
 clear
 clc
