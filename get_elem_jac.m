@@ -7,7 +7,7 @@ function  [detsJe, invJe] = get_elem_jac(elem_vtx_coords, Ds)
 %                 3D: Ds = D0, D1 and D2 (xi, eta and zeta directions)
 %
 %output: invJe: A matrix of inverse Jacobian for all quadrature points in element
-%             : size of invJe =  (num_derivatives*num_gs_pts) x num_derivatives        
+%             : size of invJe =  (num_derivatives*num_gs_pts) by num_derivatives        
 %      : detJe: determinats of Jacobian for all element quadrature points
 
   D_sz = size(fieldnames(Ds),1);
@@ -67,9 +67,7 @@ function  [detsJe, invJe] = get_elem_jac(elem_vtx_coords, Ds)
           end
       end
 
-  end
-
-      
+  end      
 end  
 
 
