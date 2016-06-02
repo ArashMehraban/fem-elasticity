@@ -1,5 +1,5 @@
 function [x,w] = get_quadrature(n)
-%input: n: Number of quadrature points
+%input: n: Number of quadrature points (Gauss)
 %output:x: Gauss quadrature points
 %       w: Gauss weights
 % Golub-Welsch algorithm: (Brute force version by Trefethen-Bau)
