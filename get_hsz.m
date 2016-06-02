@@ -1,5 +1,5 @@
 function max_h = get_hsz(msh)
-%GET_HSZ returns the size of the largest element:
+%GET_HSZ returns the size of the largest element in mesh:
 %     
 %input: msh (mesh)
 %
