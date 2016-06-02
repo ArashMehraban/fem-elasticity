@@ -1,11 +1,12 @@
 function [global_res, jac] = get_global_res(u, global_idx_map, msh, dir_bndry_val)
-% EVAL_RES evaluates the global residual and the consistent tangent
+% GET_GLOBAL_RES evaluates the global residual and the consistent tangent
 %  input:              u: vector of unknowns 
 %       : global_idx_map: global map of local u's
 %       :            msh: mesh object (see get_mesh function)
 %       :  dir_bndry_val: Dirchlet boundary values if any
 %
-% output: global_res, jac
+% output: global_res: global residual
+%       :        jac: consistant tangent
 
      %get the number of elements
      num_elem = msh.num_elem; 
