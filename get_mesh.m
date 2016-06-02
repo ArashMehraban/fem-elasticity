@@ -50,7 +50,6 @@ function msh = get_mesh(filename, ext, varargin)
 % Developed by Arash Mehraban, University of Colorado, Boulder (April 2016)
 
 
-
     %open exodus file
     if(~(strcmp(ext,'exo') || strcmp(ext,'e')))
         error('Wrong file format input. get_mesh can read .exo and .e files only!!')
