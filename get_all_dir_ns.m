@@ -1,4 +1,7 @@
 function dir_ns = get_all_dir_ns(msh)
+%GET_ALL_DIR_NS returns all of nodesets in one cell array.
+%input: mesh
+%output: All nodestes
    
     fld_names = fieldnames(msh);
     ns_names = fld_names((strncmp(fld_names,'node_ns',7)));
