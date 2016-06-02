@@ -21,8 +21,8 @@ II) Runnning Poisson problem with Dirichlet boundary condition only:
 
  Note: The u's in runPoisson.m are the solutions of Poisson PDE in 2d and 3D that 
        have been constructed using construct_neg_laplacian2d.m and 
-       construct_neg_laplacian3d.m ascript files. The rerurns by these script files
-       have been provided in get_user_f.m. So, if u is changed, then get_userf.m 
+       construct_neg_laplacian3d.m script files. The rerurns by these script files
+       have been provided in get_user_f.m file. So, if u is changed, then get_userf.m 
        must be modified accordingly.
 
   How to change get_userf with a different u?
