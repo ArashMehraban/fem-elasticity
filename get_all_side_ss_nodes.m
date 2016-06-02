@@ -1,4 +1,7 @@
 function side_ss_nodes = get_all_side_ss_nodes(msh)
+%GET_ALL_SS_NODES returns all nodes corresponding to sidesets in one cell array.
+%input: mesh
+%output: All nodes corresponding to sidesets
    
     fld_names = fieldnames(msh);
     ss_names = fld_names((strncmp(fld_names,'side_ss',7)));
