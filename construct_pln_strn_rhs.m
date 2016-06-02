@@ -1,5 +1,5 @@
 function [g1,g2] = construct_pln_strn_rhs()
-% g1 and g2 should be used in userf as constructed RHS
+% g1 and g2 should be used in get_userf as constructed RHS
    
    % u is displpacement
    u{1}=@(x,y)tanh(x).*exp(y)+sin(y);
