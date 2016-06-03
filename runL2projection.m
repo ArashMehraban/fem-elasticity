@@ -6,10 +6,10 @@ format short
 
 file_name_list{1} = {'disk4_114e_us', 'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us','disk4_2598e_us' };
 file_name_list{2} = {'disk9_114e_us', 'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
-file_name_list{3} = {'cylinder8_110e_us', 'cylinder8_368e_us', 'cylinder8_1176e_us', ...
-                     'cylinder8_1635e_us','cylinder8_4180e_us' };
-file_name_list{4} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_368e_us', ...
-                     'cylinder27_630e_us','cylinder27_1428e_us' };
+file_name_list{3} = {'cylinder8_110e_us', 'cylinder8_630e_us', 'cylinder8_1176e_us', ...
+                     'cylinder8_1635e_us','cylinder8_2448e_us' };
+file_name_list{4} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_416e_us', ...
+                     'cylinder27_630e_us','cylinder27_1116e_us' };
 
 folderName = 'mesh_no_ns_ss';
 
