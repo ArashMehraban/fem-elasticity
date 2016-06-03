@@ -20,7 +20,7 @@ before the code is run!
 
   ![alt text][L2]
 
-   [L2]: https://github.com/ArashMehraban/fem-elasticity/jpg_L2proj.jpg "L2 projection"
+   [L2]: https://github.com/ArashMehraban/fem-elasticity/blob/master/jpg_L2proj.jpg "L2 projection"
 
  **Note:** The _u_'s in _runL2projection.m_ are the solutions of L2 projection problem in 2D
        and 3D. So, if _u_ is changed, then _get_userf.m_ must be modified accordingly.
