@@ -25,118 +25,118 @@ function [f0, f1,f00, f01, f10, f11] = get_userf(ue, grad_ue, xe)
 
 %==== L2 Starts==================================%    
      
-% % %    % For L2-Projection problem:
-% % %    % Weak Form: (v: test/weight function)
-% % %    % integral(v*f0(ue,grad_ue) + grad_v : f1(ue,grad_ue)) = 0   
-% % %       
-% % %       
-% % %     %user defined rhs
-% % %     %2D
-% % %     if(sz_dim == 2)   
-% % %        g = tanh(x).*exp(y)+sin(y);
-% % %        f0{1} = ue - g; 
-% % %       
-% % %        f1=cell(1,size(grad_ue,2));
-% % %        for  j=1:size(grad_ue,2)
-% % %            f1{j} = 0*grad_ue{j};
-% % %        end
-% % %        
-% % %        
-% % %        %f_0,i = partial(f_i)/partial(ue)
-% % %        f00{1} = ones(size(f0{1},1),1);
-% % %        f01{1} = zeros(size(f1{1},1),1); 
-% % %        f01{2} = zeros(size(f1{1},1),1);
-% % %        
-% % %        
-% % %        %f_1,i = partial(f_i)/partial(gradue)
-% % %        f10{1} = zeros(size(f0{1},1),1);
-% % %        f10{2} = zeros(size(f0{1},1),1);
-% % %        f11{1} = zeros(size(f1{1},1),1);
-% % %        f11{2} = zeros(size(f1{1},1),1);  
-% % %     end
-% % %     
-% % %     %3D
-% % %     if(sz_dim == 3)
-% % %        g = tanh(x).*exp(y)+sin(y)+cos(z);
-% % %        f0{1} = ue - g; 
-% % %       
-% % %        f1=cell(1,size(grad_ue,2));
-% % %        for  j=1:size(grad_ue,2)
-% % %            f1{j} = 0*grad_ue{j};
-% % %        end
-% % %               
-% % %        %f_0,i = partial(f_i)/partial(ue)
-% % %        f00{1} = ones(size(f0{1},1),1);
-% % %        f01{1} = zeros(size(f1{1},1),1); 
-% % %        f01{2} = zeros(size(f1{1},1),1);
-% % %        f01{3} = zeros(size(f1{1},1),1);
-% % %        
-% % %        
-% % %        %f_1,i = partial(f_i)/partial(gradue)
-% % %        f10{1} = zeros(size(f0{1},1),1);
-% % %        f10{2} = zeros(size(f0{1},1),1);
-% % %        f10{3} = zeros(size(f0{1},1),1);
-% % %        f11{1} = zeros(size(f1{1},1),1);
-% % %        f11{2} = zeros(size(f1{2},1),1); 
-% % %        f11{3} = zeros(size(f1{3},1),1);
-% % %        
-% % %     end
+   % For L2-Projection problem:
+   % Weak Form: (v: test/weight function)
+   % integral(v*f0(ue,grad_ue) + grad_v : f1(ue,grad_ue)) = 0   
+      
+      
+    %user defined rhs
+    %2D
+    if(sz_dim == 2)   
+       g = tanh(x).*exp(y)+sin(y);
+       f0{1} = ue - g; 
+      
+       f1=cell(1,size(grad_ue,2));
+       for  j=1:size(grad_ue,2)
+           f1{j} = 0*grad_ue{j};
+       end
+       
+       
+       %f_0,i = partial(f_i)/partial(ue)
+       f00{1} = ones(size(f0{1},1),1);
+       f01{1} = zeros(size(f1{1},1),1); 
+       f01{2} = zeros(size(f1{1},1),1);
+       
+       
+       %f_1,i = partial(f_i)/partial(gradue)
+       f10{1} = zeros(size(f0{1},1),1);
+       f10{2} = zeros(size(f0{1},1),1);
+       f11{1} = zeros(size(f1{1},1),1);
+       f11{2} = zeros(size(f1{1},1),1);  
+    end
+    
+    %3D
+    if(sz_dim == 3)
+       g = tanh(x).*exp(y)+sin(y)+cos(z);
+       f0{1} = ue - g; 
+      
+       f1=cell(1,size(grad_ue,2));
+       for  j=1:size(grad_ue,2)
+           f1{j} = 0*grad_ue{j};
+       end
+              
+       %f_0,i = partial(f_i)/partial(ue)
+       f00{1} = ones(size(f0{1},1),1);
+       f01{1} = zeros(size(f1{1},1),1); 
+       f01{2} = zeros(size(f1{1},1),1);
+       f01{3} = zeros(size(f1{1},1),1);
+       
+       
+       %f_1,i = partial(f_i)/partial(gradue)
+       f10{1} = zeros(size(f0{1},1),1);
+       f10{2} = zeros(size(f0{1},1),1);
+       f10{3} = zeros(size(f0{1},1),1);
+       f11{1} = zeros(size(f1{1},1),1);
+       f11{2} = zeros(size(f1{2},1),1); 
+       f11{3} = zeros(size(f1{3},1),1);
+       
+    end
 
 %==== L2 ends==================================%
 
 
 %==== Poisson Starts==================================%
-     
-   if(sz_dim == 2)
-     %2D  
-     %Poisson eqn:
-     g=sin(y)+exp(y).*tanh(x)-exp(y).*tanh(x).^3.*2.0;
-     %==== -\nabla^2 (u) = g  with 0 Dirichlet B.C. ====%
-     f0{1} =  0*ue -g; 
-     f1{1} = grad_ue{1};
-     f1{2} = grad_ue{2};
-     %=====================================================%
-       
-     %f0 = @(ue, grad_ue) ue-g;
-     %f1 = @(ue, grad_ue) grad_ue;
-
-     %f_i,0 = partial(f_i)/partial(ue)
-     f00{1} = zeros(size(f0{1},1),1);
-     f10{1} = zeros(size(f1{1},1),1); 
-     f10{2} = zeros(size(f1{1},1),1); 
-     
-     %f_i,1 = partial(f_i)/partial(gradue)
-     f01{1} = zeros(size(f0{1},1),1);   
-     f01{2} = zeros(size(f1{1},1),1);
-     f11{1} = ones(size(f1{1},1),1);
-     f11{2} = ones(size(f1{1},1),1);
-   end
-   
-   if(sz_dim == 3)
-     %3D  
-     %Poisson eqn:
-     g=cos(z)+sin(y)+exp(y).*tanh(x)-exp(y).*tanh(x).^3.*2.0;
-     
-     f0{1} =  0*ue -g; 
-     f1{1} = grad_ue{1};
-     f1{2} = grad_ue{2};
-     f1{3} = grad_ue{3};
-
-
-     %f_i,0 = partial(f_i)/partial(ue)
-     f00{1} = zeros(size(f0{1},1),1);
-     f10{1} = zeros(size(f1{1},1),1); 
-     f10{2} = zeros(size(f1{2},1),1); 
-     f10{3} = zeros(size(f1{3},1),1);
-     
-     %f_i,1 = partial(f_i)/partial(gradue)
-     f01{1} = zeros(size(f1{1},1),1);   
-     f01{2} = zeros(size(f1{2},1),1);
-     f01{3} = zeros(size(f1{3},1),1);
-     f11{1} = ones(size(f1{1},1),1);
-     f11{2} = ones(size(f1{2},1),1);
-     f11{3} = ones(size(f1{3},1),1);
-   end
+% % %      
+% % %    if(sz_dim == 2)
+% % %      %2D  
+% % %      %Poisson eqn:
+% % %      g=sin(y)+exp(y).*tanh(x)-exp(y).*tanh(x).^3.*2.0;
+% % %      %==== -\nabla^2 (u) = g  with 0 Dirichlet B.C. ====%
+% % %      f0{1} =  0*ue -g; 
+% % %      f1{1} = grad_ue{1};
+% % %      f1{2} = grad_ue{2};
+% % %      %=====================================================%
+% % %        
+% % %      %f0 = @(ue, grad_ue) ue-g;
+% % %      %f1 = @(ue, grad_ue) grad_ue;
+% % % 
+% % %      %f_i,0 = partial(f_i)/partial(ue)
+% % %      f00{1} = zeros(size(f0{1},1),1);
+% % %      f10{1} = zeros(size(f1{1},1),1); 
+% % %      f10{2} = zeros(size(f1{1},1),1); 
+% % %      
+% % %      %f_i,1 = partial(f_i)/partial(gradue)
+% % %      f01{1} = zeros(size(f0{1},1),1);   
+% % %      f01{2} = zeros(size(f1{1},1),1);
+% % %      f11{1} = ones(size(f1{1},1),1);
+% % %      f11{2} = ones(size(f1{1},1),1);
+% % %    end
+% % %    
+% % %    if(sz_dim == 3)
+% % %      %3D  
+% % %      %Poisson eqn:
+% % %      g=cos(z)+sin(y)+exp(y).*tanh(x)-exp(y).*tanh(x).^3.*2.0;
+% % %      
+% % %      f0{1} =  0*ue -g; 
+% % %      f1{1} = grad_ue{1};
+% % %      f1{2} = grad_ue{2};
+% % %      f1{3} = grad_ue{3};
+% % % 
+% % % 
+% % %      %f_i,0 = partial(f_i)/partial(ue)
+% % %      f00{1} = zeros(size(f0{1},1),1);
+% % %      f10{1} = zeros(size(f1{1},1),1); 
+% % %      f10{2} = zeros(size(f1{2},1),1); 
+% % %      f10{3} = zeros(size(f1{3},1),1);
+% % %      
+% % %      %f_i,1 = partial(f_i)/partial(gradue)
+% % %      f01{1} = zeros(size(f1{1},1),1);   
+% % %      f01{2} = zeros(size(f1{2},1),1);
+% % %      f01{3} = zeros(size(f1{3},1),1);
+% % %      f11{1} = ones(size(f1{1},1),1);
+% % %      f11{2} = ones(size(f1{2},1),1);
+% % %      f11{3} = ones(size(f1{3},1),1);
+% % %    end
    
 %==== Poisson ends==================================%   
    
