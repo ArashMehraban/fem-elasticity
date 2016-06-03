@@ -20,19 +20,20 @@ I) Runnning L2 Projection problem:
 
   4) MATLAB should generate a plot that looks like jpg_L2proj.jpg 
 
- Note: The u's in runL2projection.m are the solutions of L2 projection problem in 2d
+ Note: The u's in runL2projection.m are the solutions of L2 projection problem in 2D
        and 3D. So, if u is changed, then get_userf.m must be modified accordingly.
 
   How to change get_userf with a different u?
  
   i) Make sure the part of the code in get_userf.m corresponding to L2 projection problem 
-     is uncommented. The coressponding part is in between
+     is uncommented while everything else, EXCEPT where in the code says do not comment/remove,
+     is commented. The coressponding part is in between
 
    %==== L2 Starts====%
 
    %==== L2 ends======% 
 
-   ii) Simply look for variable g under 2D or 3D sections for L2 Projection in get_userf.m 
+   ii) Look for variable g under 2D or 3D sections for L2 Projection in get_userf.m 
        and place the new u for your 2D or 3D problem.
 
 
