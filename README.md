@@ -50,6 +50,10 @@ before the code is run!
      separate from .m files.
    3. Run _runPoisson.m_ 
    4. MATLAB should generate a plot that looks like _jpg_runPoisson_Dirich.jpg_
+  
+  ![alt text][Poisson]
+
+   [Poisson]: https://github.com/ArashMehraban/fem-elasticity/blob/master/jpg_runPoisson_Dirich.jpg "Poisson with Dirichlet Boundary conditions only"
 
  Note: The _u_'s in runPoisson.m are the solutions of Poisson PDE in 2d and 3D that 
        have been constructed using _construct_neg_laplacian2d.m_ and 
