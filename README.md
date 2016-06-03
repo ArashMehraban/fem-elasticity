@@ -36,6 +36,7 @@ I) Runnning L2 Projection problem:
    ii) Look for variable g under 2D or 3D sections for L2 Projection in get_userf.m 
        and place the new u for your 2D or 3D problem.
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 II) Runnning Poisson problem with Dirichlet boundary condition only:
 
@@ -59,7 +60,7 @@ II) Runnning Poisson problem with Dirichlet boundary condition only:
   How to change get_userf with a different u?
   Answer coming soon!
 
-
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 III) Runnning Plane Strain problem:
    Under Construction
