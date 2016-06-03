@@ -7,7 +7,7 @@ mesh folder automatically. Due to MATLAB 's strange path system, wrong mesh file
 be imported by the code. Make sure all mesh folders have been removed from path before 
 running code.
 
-I) Runnning L2 Projection problem:(Under Construction)
+I) Runnning L2 Projection problem:
 
   1) Save all functions (.m files) starting with "get_" along with runL2projection.m
       in a folder in MATLAB path
