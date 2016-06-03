@@ -31,7 +31,7 @@ before the code is run!
 
    %==== L2 ends======% 
 
-   + Once the corresponding part of the code to L2 projection in get_userf is uncommented,
+  + Once the corresponding part of the code to L2 projection in get_userf is uncommented,
        look for variable g under 2D and/or 3D sections for L2 Projection in get_userf.m 
        and place the new u for your 2D and/or 3D problem.
 
