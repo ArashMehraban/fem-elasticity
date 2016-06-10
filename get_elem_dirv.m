@@ -10,7 +10,9 @@ function Di = get_elem_dirv(invJe, Ds)
 %              points in direction 3 = zeta
 %
 %  output: Di: A cell-array of element derivative in directions i (1,2 or 3)
-
+%              Di{1} = partial_N/partial_x 
+%              Di{2} = partial_N/partial_y
+%              Di{3} = partial_N/partial_z
     % For calculation:2D (same trend for 3D)
     % rearrange invJe to perform block matrix mutiplication
     % eg.                     
@@ -42,12 +44,16 @@ function Di = get_elem_dirv(invJe, Ds)
     % structure of invJe per quadrature point
     % invJe = [partial_xi/partial_x , partial_eta/partial_x]
     %         [partial_xi/partial_y , partial_eta/partial_y]
-    % entries with \partial_x must be multiplied by D0
-    % entries with \partial_y must be multiplied by D1
+    % entries with \partial_xi must be multiplied by D0 (=partial_N/partial_xi)
+    % entries with \partial_eta must be multiplied by D1 (=partial_N/partial_eta)
+    
+    % structure of Di per quadrature point
+    %Di{1} = partial_N/partial_x 
+    %Di{2} = partial_N/partial_y
     if(D_sz == 2)
         block_invJe = [invJe(1:blocksz:end,:) ,  invJe(2:blocksz:end,:)];
-        Di{1} = diag(block_invJe(:,1))*D0 + diag(block_invJe(:,3))*D1;
-        Di{2} = diag(block_invJe(:,2))*D0 + diag(block_invJe(:,4))*D1; 
+        Di{1} = diag(block_invJe(:,1))*D0 + diag(block_invJe(:,2))*D1;
+        Di{2} = diag(block_invJe(:,3))*D0 + diag(block_invJe(:,4))*D1; 
     end
     
     %3D
@@ -61,8 +67,8 @@ function Di = get_elem_dirv(invJe, Ds)
     % entries with \partial_z must be multiplied by D2
     if(D_sz == 3)
         block_invJe = [invJe(1:blocksz:end,:) , invJe(2:blocksz:end,:), invJe(3:blocksz:end,:)];
-        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,4))*D1 + diag(block_invJe(:,7))*D2;
-        Di{2} = diag(block_invJe(:,2))* D0 + diag(block_invJe(:,5))*D1 + diag(block_invJe(:,8))*D2;
-        Di{3} = diag(block_invJe(:,3))* D0 + diag(block_invJe(:,6))*D1 + diag(block_invJe(:,9))*D2;
+        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D1 + diag(block_invJe(:,3))*D2;
+        Di{2} = diag(block_invJe(:,4))* D0 + diag(block_invJe(:,5))*D1 + diag(block_invJe(:,6))*D2;
+        Di{3} = diag(block_invJe(:,7))* D0 + diag(block_invJe(:,8))*D1 + diag(block_invJe(:,9))*D2;
     end
 end
