@@ -1,9 +1,10 @@
-function [global_res, jac] = get_global_res(u, global_idx_map, msh, dir_bndry_val)
+function [global_res, jac] = get_global_res(u, global_idx_map, msh, dir_bndry_val, problem_type)
 % GET_GLOBAL_RES evaluates the global residual and the consistent tangent
 %  input:              u: vector of unknowns 
 %       : global_idx_map: global map of local u's
 %       :            msh: mesh object (see get_mesh function)
 %       :  dir_bndry_val: Dirchlet boundary values if any
+%       :          userf: user supplied code for get_userf function
 %
 % output: global_res: global residual
 %       :        jac: consistant tangent
@@ -28,17 +29,36 @@ function [global_res, jac] = get_global_res(u, global_idx_map, msh, dir_bndry_va
       
      global_u =  get_global_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);     
      
-     %Allocate space for globall Jacobian
-     jac = zeros(unknown_sz,unknown_sz);
-     
      %get size of dofs per node
      sz_global_idx_map = size(global_idx_map,2);
      
      %get element type    
-     elm_type = msh.num_nodes_per_elem; 
+     num_quadr_pts = msh.num_nodes_per_elem;
+     
      %get Weights, Basis (B) functions and their Derivatives (D0, D1 and D2)
      % D = partial_B/partial_x_i
-     [B, Ds, W_hat] = get_shape(elm_type);
+     [B, Ds, W_hat] = get_shape(num_quadr_pts);
+        
+     %number of element derivative matrices
+     num_elem_dirv = size(fieldnames(Ds),1);
+     
+     %Allocate space for globall Jacobian
+     jac = zeros(unknown_sz,unknown_sz);
+     
+     %index for global Jacobian
+     %row indices
+     c = num_quadr_pts*(1:sz_global_idx_map)- (num_quadr_pts-1);
+     r = (num_quadr_pts*(1:sz_global_idx_map));
+     cidx = repmat(c,1,sz_global_idx_map)';
+     ridx = repmat(r,1,sz_global_idx_map)';
+     %col indices
+     rr = (num_quadr_pts*(1:sz_global_idx_map)- (num_quadr_pts-1))';
+     cc = (num_quadr_pts*(1:sz_global_idx_map))';
+     jcidx = repmat(rr,1,sz_global_idx_map)';
+     jcidx = jcidx(:);
+     jridx = repmat(cc,1,sz_global_idx_map)';
+     jridx = jridx(:);
+     idx=[jcidx, jridx, cidx, ridx];     
                
      for i=1:num_elem
          
@@ -56,100 +76,111 @@ function [global_res, jac] = get_global_res(u, global_idx_map, msh, dir_bndry_va
          
          %get mapping constituents from element jacobian 
          [dets, invJe] = get_elem_jac(element_vtx_coords, Ds);
-         Di = get_elem_dirv(invJe, Ds);
-                 
-         % ue structure [B*u1, Bu*u2, B*u3]
-         ue = B*elem_u;         
-         
-         % grad_ue structure: [[Di0*u1, Di0*u2], [Di1*u1, Di1*u2], [Di2*u1, Di2*u2]]
-         grad_ue=cell(1,size(Di,2));
-         for  j=1:size(Di,2)
-             grad_ue{j}=Di{j}*elem_u;
+         Di = get_elem_dirv(invJe, Ds); 
+          
+         % grad_ue structure:
+         % 2D: [Di_1*u1, Di_2*u_1 |  Di_1*u2, Di_2*u_2]
+         % 3D: [Di_1*u1, Di_2*u_1, Di_3*u1 | Di_1*u2, Di_2*u_2, Di_3*u2  | Di_1*u3, Di_2*u_3, Di_3*u3]
+         grad_ue = zeros(size(elem_u,1),num_elem_dirv*size(elem_u,2));
+         for  j=1:num_elem_dirv
+             grad_ue(:,j:num_elem_dirv:end) = Di((j-1)*num_quadr_pts+1:j*num_quadr_pts,:)*elem_u;
          end
-
+         
+         % ue structure: 
+         % 2D: [B*u1, B*u2]
+         % 3D: [B*u1, B*u2, B*u3]
+         ue = B*elem_u;             
+ 
          % mapped quadrature points to reference coordinate system
          mp_qd_pts= B*element_vtx_coords;
          
-        [f0,f1,f00, f01, f10, f11] = get_userf(ue, grad_ue,mp_qd_pts); 
+        [f0,f1,f00, f01, f10, f11] = get_userf(ue, grad_ue, mp_qd_pts, problem_type); 
                  
          %get Gauss Weights for the current element
          W = W_hat.*dets;
          
          
-          De_res = 0;
-          for j=1:size(Di,2)
-              De_res = De_res +(Di{j}'* (W.*f1{j}));
-          end
+         wf1 = zeros(size(f1));
+         for j=1:size(wf1,2);
+             wf1(:,j) = W.*f1(:,j);
+         end
+         
+         D_res = zeros(size(f1,1),sz_global_idx_map); 
+         for j=1:num_elem_dirv 
+             D_res = D_res + Di((j-1)*num_quadr_pts+1:j*num_quadr_pts,:)'*wf1(:,j:num_elem_dirv:end);
+         end
+
+         
+         wf0 = zeros(size(f0));
+         for j=1:size(f0,2)
+             wf0(:,j) = W.*f0(:,j);
+         end 
+         
+         % element residual evaluation
+         res_e = B'*wf0 + D_res;
+         
+         
+         %jac_e constituents:
+         
+%         f0u = B'*diag(W.*f00)*B;%
+           
+         f0u=zeros(neldof,neldof);
+         for j=1:size(idx,1)
+             f0u(idx(j,1):idx(j,2),idx(j,3):idx(j,4)) = B'*diag(W.*f00(:,j))*B;
+         end
           
+%          f01TD =zeros(num_quadr_pts,num_quadr_pts);
+%          for j=1:num_elem_dirv 
+%             f01TD = f01TD + diag(f01(:,j))*Di((j-1)*num_quadr_pts+1:j*num_quadr_pts,:);
+%          end
+%          f0gu = B'*diag(W)*f01TD;
+
+         
+         f01TD =zeros(num_quadr_pts,num_quadr_pts);
+         f0gu=zeros(neldof,neldof);
+         s=1;
+         for j=1:size(idx,1)
+             for k = 1:num_elem_dirv
+                 f01TD = f01TD + diag(f01(:,s))*Di((k-1)*num_quadr_pts+1:k*num_quadr_pts,:);
+                 s=s+1;
+             end
+            f0gu(idx(j,1):idx(j,2),idx(j,3):idx(j,4)) = B'*diag(W)*f01TD;
+         end
+         
+%          
+%          f1u = zeros(num_quadr_pts,num_quadr_pts);
+%          for j=1:num_elem_dirv 
+%             f1u = f1u + Di((j-1)*num_quadr_pts+1:j*num_quadr_pts,:)'*diag(W.*f10(:,j))*B;
+%          end
+         
+         f1u = zeros(neldof,neldof);
+         f1uTD = zeros(neldof_per_ui,neldof_per_ui);
+         s=1;
+         for j=1:size(idx,1) 
+             for k = 1:num_elem_dirv
+                 f1uTD = f1uTD + Di((k-1)*num_quadr_pts+1:k*num_quadr_pts,:)'*diag(W.*f10(:,s));
+                 s=s+1;
+             end
+             f1u(idx(j,1):idx(j,2),idx(j,3):idx(j,4)) = f1uTD*B;             
+         end
+
+%          f1gu_old = zeros(num_quadr_pts,num_quadr_pts);
+%          for j=1:num_elem_dirv
+%             f1gu_old = f1gu_old + Di((j-1)*num_quadr_pts+1:j*num_quadr_pts,:)'* diag(W.*f11(:,j))*Di((j-1)*num_quadr_pts+1:j*num_quadr_pts,:); 
+%          end
+
+         f1gu = zeros(neldof,neldof);
+         s=1;
+         for j=1:size(idx,1)
+             for k = 1:num_elem_dirv
+                 f1gu(idx(j,1):idx(j,2),idx(j,3):idx(j,4)) = f1gu(idx(j,1):idx(j,2),idx(j,3):idx(j,4)) + Di((k-1)*num_quadr_pts+1:k*num_quadr_pts,:)'* diag(W.*f11(:,s))*Di((k-1)*num_quadr_pts+1:k*num_quadr_pts,:); 
+                 s=s+1;
+             end
+             %f1gu(idx(j,1):idx(j,2),idx(j,3):idx(j,4)) = f1guTD*Di((k-1)*num_quadr_pts+1:k*num_quadr_pts,:);
+         end
+         
+         
                 
-          % element residual evaluation
-          res_e = B'*(W.*f0{1}) + De_res;
-         
-% % % % %          D_res = zeros(size(f1{1})); 
-% % % % %          wf1 = zeros(size(f1{1}));
-% % % % %          for j=1:size(Di,2)
-% % % % %              for k=1:size(f1{1},2)
-% % % % %                  wf1(:,k) = W.*f1{j}(:,k);
-% % % % %              end            
-% % % % %                  D_res = D_res + Di{j}'*wf1;
-% % % % %          end
-% % % % %          
-% % % % %          wf0 = zeros(size(f0{1},1), size(f0,2));
-% % % % %          for k=1:size(f0,2)
-% % % % %              wf0(:,k) = W.*f0{k};
-% % % % %          end 
-% % % % %          
-% % % % %          % element residual evaluation
-% % % % %          res_e = B'*wf0 + D_res;
-% % % % %                       
-% % % % %          %element jac_e constituents
-% % % % %          f0u=zeros(neldof,neldof);
-% % % % %          wf00 = zeros(size(f00{1},1), size(f00,2)*size(f00{1},2));
-% % % % %          m=1;
-% % % % %          for j=1:size(f00,2)
-% % % % %              for k=1:size(f00{j},2)
-% % % % %                  wf00(:,m) = W.*f00{j}(:,k);
-% % % % %                  m=m+1;
-% % % % %              end
-% % % % %          end 
-% % % % %         
-% % % % %          n=1;
-% % % % %          s=1;
-% % % % %          for j=1:sz_global_idx_map
-% % % % %              m=0;
-% % % % %              for k = 1:sz_global_idx_map
-% % % % %                  tmp = B'*diag(wf00(:,s))*B;
-% % % % %                  sz_tmp = size(tmp,1);
-% % % % %                  j = n;
-% % % % %                  f0u(j:sz_tmp+n-1, m+1:m+sz_tmp ) = tmp;
-% % % % %                  m = m+sz_tmp;
-% % % % %                  s =s+1;
-% % % % %              end
-% % % % %              n = n+sz_tmp;
-% % % % %          end
-
-          
-
-         %========delete this=======% 
-         f0u = B'*diag(W.*f00{1})*B;%
-         %==========================%
-         
-         f01TD =0;
-         for j=1:size(Di,2) 
-            f01TD = f01TD + diag(f01{j})*Di{j};
-         end
-         f0gu = B'*diag(W)*f01TD;
-         
-         f1u = 0;
-         for j=1:size(Di,2) 
-            f1u = f1u + Di{j}'*diag(W.*f10{j})*B;
-         end
-         
-         f1gu = 0;
-         for j=1:size(Di,2)
-            f1gu = f1gu + Di{j}'* diag(W.*f11{j})*Di{j}; 
-         end
-         
          % element consistant tnagent evaulation (jac_e)
          jac_e = f0u + f0gu + f1u + f1gu;           
          
