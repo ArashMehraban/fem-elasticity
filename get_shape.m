@@ -1,4 +1,4 @@
-function [B, Ds, W_hat] = get_shape(elm_type)
+function [B, Ds, W_hat] = get_shape(num_quadr_pts)
 % GET_SHAPE returns shape/basis functions for following Element Types:
 %     2D elements: 4: QUAD4  or  9: QUAD9
 %     3D elements: 8: HEX8   or 27: HEX27 
@@ -34,24 +34,24 @@ function [B, Ds, W_hat] = get_shape(elm_type)
 %                          D2 = dHat (K) bHat (K) bHat
 %
 %
-       if(elm_type == 4 || elm_type == 8)
-            n_gs_pts = 2;
+       if(num_quadr_pts == 4 || num_quadr_pts == 8)
+            n_gs_pts_in_1d = 2;
             % x: Guass points    w: Gauss weights
-            [x, w] = get_quadrature(n_gs_pts);  
+            [x, w] = get_quadrature(n_gs_pts_in_1d);  
             bHat = [(1-x)/2, (1+x)/2];
             dHat = [-1/2+0*x, 1/2+0*x];
        end
-       if(elm_type == 9 || elm_type == 27)
-            n_gs_pts = 3;
+       if(num_quadr_pts == 9 || num_quadr_pts == 27)
+            n_gs_pts_in_1d = 3;
             % x: Guass points    w: Gauss weights
-            [x, w] = get_quadrature(n_gs_pts); 
+            [x, w] = get_quadrature(n_gs_pts_in_1d); 
             bHat = [(x.^2 - x)/2, (1-x.^2), (x.^2+x)/2];
             dHat = [x-1/2, -2*x, x+1/2];
        end
       
 
 %   2D 
-    if(elm_type == 4 || elm_type == 9)         
+    if(num_quadr_pts == 4 || num_quadr_pts == 9)         
         
         field_names = {'D0', 'D1'};
         
@@ -66,7 +66,7 @@ function [B, Ds, W_hat] = get_shape(elm_type)
     end
     
 %   3D
-    if(elm_type == 8 || elm_type == 27) 
+    if(num_quadr_pts == 8 || num_quadr_pts == 27) 
         
         field_names = {'D0', 'D1' ,'D2'};
         
