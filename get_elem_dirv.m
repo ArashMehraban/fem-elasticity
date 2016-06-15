@@ -1,4 +1,4 @@
-function Di = get_elem_dirv(invJe, Ds)  
+function Di = get_elem_dirv_mat(invJe, Ds)  
 %   input: invJe: Jacobian Inverse
 %      2D:
 %        : D0: Drivative of shape/basis functions evaluated at quadrature
@@ -10,9 +10,9 @@ function Di = get_elem_dirv(invJe, Ds)
 %              points in direction 3 = zeta
 %
 %  output: Di: A cell-array of element derivative in directions i (1,2 or 3)
-%              Di{1} = partial_N/partial_x 
-%              Di{2} = partial_N/partial_y
-%              Di{3} = partial_N/partial_z
+%              Di_1_mat = partial_N/partial_x 
+%              Di_2_mat = partial_N/partial_y
+%              Di_3_mat = partial_N/partial_z
     % For calculation:2D (same trend for 3D)
     % rearrange invJe to perform block matrix mutiplication
     % eg.                     
@@ -38,6 +38,8 @@ function Di = get_elem_dirv(invJe, Ds)
     end
     
     blocksz = size(invJe,1)/size(D0,1); 
+    num_gs_pts = size(D0,1);
+    Di = zeros(blocksz*num_gs_pts,num_gs_pts);
     
     %2D  
     
@@ -52,8 +54,8 @@ function Di = get_elem_dirv(invJe, Ds)
     %Di{2} = partial_N/partial_y
     if(D_sz == 2)
         block_invJe = [invJe(1:blocksz:end,:) ,  invJe(2:blocksz:end,:)];
-        Di{1} = diag(block_invJe(:,1))*D0 + diag(block_invJe(:,2))*D1;
-        Di{2} = diag(block_invJe(:,3))*D0 + diag(block_invJe(:,4))*D1; 
+        Di(1:num_gs_pts,:) = diag(block_invJe(:,1))*D0 + diag(block_invJe(:,2))*D1;
+        Di(num_gs_pts+1:end,:) = diag(block_invJe(:,3))*D0 + diag(block_invJe(:,4))*D1; 
     end
     
     %3D
@@ -67,8 +69,9 @@ function Di = get_elem_dirv(invJe, Ds)
     % entries with \partial_z must be multiplied by D2
     if(D_sz == 3)
         block_invJe = [invJe(1:blocksz:end,:) , invJe(2:blocksz:end,:), invJe(3:blocksz:end,:)];
-        Di{1} = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D1 + diag(block_invJe(:,3))*D2;
-        Di{2} = diag(block_invJe(:,4))* D0 + diag(block_invJe(:,5))*D1 + diag(block_invJe(:,6))*D2;
-        Di{3} = diag(block_invJe(:,7))* D0 + diag(block_invJe(:,8))*D1 + diag(block_invJe(:,9))*D2;
+        Di(1:num_gs_pts,:) = diag(block_invJe(:,1))* D0 + diag(block_invJe(:,2))*D1 + diag(block_invJe(:,3))*D2;
+        Di(num_gs_pts+1:2*num_gs_pts,:) = diag(block_invJe(:,4))* D0 + diag(block_invJe(:,5))*D1 + diag(block_invJe(:,6))*D2;
+        Di(2*num_gs_pts+1:3*num_gs_pts,:) = diag(block_invJe(:,7))* D0 + diag(block_invJe(:,8))*D1 + diag(block_invJe(:,9))*D2;
     end
+
 end
