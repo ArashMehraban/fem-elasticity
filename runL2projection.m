@@ -4,12 +4,10 @@ clear
 clc
 format short
 
-file_name_list{1} = {'disk4_114e_us', 'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us','disk4_2598e_us' };
+file_name_list{1} = {'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us','disk4_2598e_us' };
 file_name_list{2} = {'disk9_114e_us', 'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
-file_name_list{3} = {'cylinder8_110e_us', 'cylinder8_630e_us', 'cylinder8_1176e_us', ...
-                     'cylinder8_1635e_us','cylinder8_2448e_us' };
-file_name_list{4} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_416e_us', ...
-                     'cylinder27_630e_us','cylinder27_1116e_us' };
+file_name_list{3} = {'cylinder8_110e_us', 'cylinder8_630e_us', 'cylinder8_1176e_us','cylinder8_1635e_us','cylinder8_2448e_us' };
+file_name_list{4} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_416e_us','cylinder27_630e_us','cylinder27_1067e_us'};
 
 folderName = 'mesh_no_ns_ss';
 
@@ -20,6 +18,16 @@ for i=1:size(file_name_list,2)
     files{i} = get_files(folderName, file_name_list{i});
 end
 
+
+
+%Provide the number of quadrature points in 1D per element used per set of files
+num_quadr_pts_in_1d=[2,3,2,3];
+userf={@userf_L2_2d;@userf_L2_2d;@userf_L2_3d;@userf_L2_3d};
+userdf={@userdf_L2_2d;@userdf_L2_2d;@userdf_L2_3d;@userdf_L2_3d};
+max_iter_gmres = 80;
+max_iter_nw = 10;
+global_res_tol = 1.0e-8;
+tol = 1.0e-9;
 
 for i=1:size(files,2)
     error = zeros(1,size(files{i},2));
@@ -33,7 +41,7 @@ for i=1:size(files,2)
         h(j) = get_hsz(msh);
          
         sz_u_field = 1;
-        
+                
         %get all Dirichlet boundary node sets
         dir_bndry_nodes = get_all_dir_ns(msh);
 
@@ -51,8 +59,9 @@ for i=1:size(files,2)
         %get constructed dir_bndry_vals and exac Solutions on remaining nodes 
         [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes, given_u);
         %========================================================================================%
-
-        fem_sol =  get_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val);
+        
+        solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol};
+        fem_sol =  get_fem_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
         error(j) = norm(exactSol - fem_sol)/norm(fem_sol);
     end
     if(dims ==2)
