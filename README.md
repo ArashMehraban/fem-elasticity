@@ -52,7 +52,7 @@ Note 2:  _userf_poisson_2d.m_ and _userf_poisson_3d.m_ are the physics of the pr
          is a linear problem.
 
 
-**Runnning Plian Strain problem with Dirichlet boundary condition only:**
+**Runnning Plane Strain problem with Dirichlet boundary condition only:**
 
    1. Run _runPlaneStrain.m_  
    2. MATLAB should generate a plot that looks like _jpg_poisson.jpg_
