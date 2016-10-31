@@ -8,7 +8,7 @@ wrong mesh files may be imported by the code if all mesh folders are on MATLAB p
 before the code is run! The example code (e.g. runL2projection.m, runPoisson.m, etc) 
 show how to add and remove the necessary mesh folder for those problems.
 
-**For all any problem:**
+**For all problems:**
 
   1. Clone the entire fem-elastisity repository
   2. Place the fem-elastisity folder **only** on MATLAB path. 
