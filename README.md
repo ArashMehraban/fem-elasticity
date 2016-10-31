@@ -5,13 +5,14 @@ Mesh files have been provided in separate folders in this repository. Make sure
 all mesh folders are removed from MATLAB path before running code. Different mesh
 files have the same names in different mesh folders. Due to MATLAB's strange path system, 
 wrong mesh files may be imported by the code if all mesh folders are on MATLAB path 
-before the code is run! TThe example code (e.g. runL2projection.m, runPoisson.m, etc) 
+before the code is run! The example code (e.g. runL2projection.m, runPoisson.m, etc) 
 show how to add and remove the necessary mesh folder for those problems.
 
 **For all any problem:**
-1. Clone the entire fem-elastisity repository
-2. Place the fem-elastisity folder **only** on MATLAB path. 
-3. Make sure the **mesh** and **test_units** folders are removed from Path (see above 
+
+  1. Clone the entire fem-elastisity repository
+  2. Place the fem-elastisity folder **only** on MATLAB path. 
+  3. Make sure the **mesh** and **test_units** folders are removed from Path (see above 
    **Important Note**)
 
 **Runnning L2 Projection problem:**
