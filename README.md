@@ -37,14 +37,14 @@ show how to add and remove the necessary mesh folder for those problems.
 
    [Poisson]: https://github.com/ArashMehraban/fem-elasticity/blob/master/jpg_poisson.jpg "Poisson with Dirichlet Boundary conditions only"
 
- Note 1: The _u_'s in _runPoisson.m_ are the solutions of Poisson PDE in 2D and 3D that 
+ **Note 1**: The _u_'s in _runPoisson.m_ are the solutions of Poisson PDE in 2D and 3D that 
          have been constructed using _construct_poisson_2d.m_ and 
          _construct_poisson_3d.m_ files. The returns by these script files
          must be used _userf_poisson_2d.m_ and _userf_poisson_3d.m_ files. So, if _u_ 
          is changed, then the g variable(s) in  _userf_poisson_2d.m_ and 
          _userf_poisson_3d.m_ must be modified accordingly.
 
-Note 2:  _userf_poisson_2d.m_ and _userf_poisson_3d.m_ are the physics of the problem 
+ **Note 2**: _userf_poisson_2d.m_ and _userf_poisson_3d.m_ are the physics of the problem 
          that the user provides. User must also provide the constituents for the
          **consistent tangent** of each problem. That is perfomed by modifying 
          _user**d**f_poisson_2d.m_ and _user**d**f_poisson_3d.m_
@@ -62,12 +62,12 @@ Note 2:  _userf_poisson_2d.m_ and _userf_poisson_3d.m_ are the physics of the pr
 
    [Plane Strain]: https://github.com/ArashMehraban/fem-elasticity/blob/master/jpg_planeStrain.jpg "Plane Straine with Dirichlet Boundary conditions only"
 
- Note 1: The _u_'s in _runPlaneStrain.m_ are the solutions of Plane Strain PDE in 2D that 
+ **Note 1**: The _u_'s in _runPlaneStrain.m_ are the solutions of Plane Strain PDE in 2D that 
          have been constructed using _construct_plane_strain.m_ file. The returns by this 
          script file must be used in _userf_planeStrain.m_ file. So, if _u_ is changed, 
          then the g variable(s) in  _userf_planeStrain.m_ must be modified accordingly.
 
- Note 2: _userf_planeStrain.m_  contains the physics of the problem that the user provides. 
+ **Note 2:** _userf_planeStrain.m_  contains the physics of the problem that the user provides. 
          User must also provide the constituents for the **consistent tangent** of the
          problem. That is perfomed by modifying _user**d**f_planeStrain.m_. 
          Note that, the code in _userf_planeStrain.m_ is almost identical to _userdf_planeStrain.m_  
@@ -82,12 +82,12 @@ Note 2:  _userf_poisson_2d.m_ and _userf_poisson_3d.m_ are the physics of the pr
 
    [3D Elastisity]: https://github.com/ArashMehraban/fem-elasticity/blob/master/jpg_3dElas.jpg "3D Elastisity with Dirichlet Boundary conditions only"
 
- Note 1: The _u_'s in _run3dElas.m_ are the solutions of 3D Elastisity PDE in 3D that 
+ **Note 1**: The _u_'s in _run3dElas.m_ are the solutions of 3D Elastisity PDE in 3D that 
          have been constructed using _construct_linear_3d_elas.m_ file. The returns by this 
          script file must be used in _userf_3d_elas.m_ file. So, if _u_ is changed, 
          then the g variable(s) in  _userf_3d_elas.m_ must be modified accordingly.
 
- Note 2: _userf_3d_elas.m_  contains the physics of the problem that the user provides. 
+ **Note 2:** _userf_3d_elas.m_  contains the physics of the problem that the user provides. 
          User must also provide the constituents for the **consistent tangent** of the
          problem. That is perfomed by modifying _user**d**f_3d_elas.m_. 
          Note that, the code in _userdf_3d_elas.m_ is almost identical to _userf_3d_elas.m_  
