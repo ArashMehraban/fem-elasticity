@@ -71,9 +71,9 @@ function global_jac = get_global_jac(dlta_u, global_idx_map, msh,num_quadr_pts_i
          dlta_ue = B*elem_dlta_u;
                  
          % mapped quadrature points to reference coordinate system
-         vtx_in_ref_coords= B*element_vtx_coords;
+         xe= B*element_vtx_coords;
          
-         f = userdf(dlta_ue, grad_dlta_ue,vtx_in_ref_coords);
+         f = userdf(dlta_ue, grad_dlta_ue,xe);
          [r,c]=size(f);
          
          tmpf = reshape(f, size(W,1), []);
