@@ -25,7 +25,8 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
     
     %get the unknown u guess vector and global to local mapping for each u
     [u, global_idx_map] = get_global_map(num_nodes,dir_bndry_nodes,sz_u_field);
-    
+     dlta_u = u;
+     dlta_u(2) =1;
     
     solverType = solver{1};
     
@@ -41,6 +42,10 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
         global_res_tol = solver{5};
         
         while(true)
+            
+            % delme=get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
+%             
+             Je = get_global_jac(dlta_u, global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf);
                     
             global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val, num_quadr_pts_in_1d, userf); 
      
@@ -55,7 +60,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
                 break;
             end           
         
-            jac_fun = @(dlta_u)get_global_jac(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
+            jac_fun = @(dlta_u)get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
             dlta_u= gmres(jac_fun, global_res,max_iter_gmres,tol);
             u=u-dlta_u;
 
@@ -68,7 +73,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
                 for i=1:size(u,1)
                     Iden =eye(size(u,1));
                     du = Iden(:,i);
-                    JACOB__(:,i)=get_global_jac(du, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
+                    JACOB__(:,i)=get_global_Jv(du, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
                 end
             end
         else
