@@ -2,13 +2,13 @@ function relaxed_conn = get_relax_mesh(msh)
      
     elem_type = msh.num_nodes_per_elem;
     conn = msh.conn;
+    i=1:size(conn,1);
     if(elem_type == 9)
         qt1 = [1 2 4 5];
         qt2 = [2 3 5 6];
         qt3 = [4 5 7 8];
         qt4 = [5 6 8 9];
         
-        i=1:size(conn,1);
         conn1 = conn(i,qt1);
         conn2 = conn(i,qt2);
         conn3 = conn(i,qt3);
@@ -25,7 +25,6 @@ function relaxed_conn = get_relax_mesh(msh)
         cb7 = [13 14 16 17 22 23 25 26];
         cb8 = [14 15 17 18 23 24 26 27];
         
-        i=1:size(conn,1);
         conn1 = conn(i,cb1);
         conn2 = conn(i,cb2);
         conn3 = conn(i,cb3);
