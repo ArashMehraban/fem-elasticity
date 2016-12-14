@@ -15,9 +15,9 @@ function [f0,f1] = userf_3d_elas(ue, grad_ue, xe)
     z=xe(:,3);
     
    %grad_ue  structure:
-   % 3D:          [D1*u1 | D1*u2 | D1*u3]   [du1/dx | du2/dx | du3/dx] 
-   %    grad_ue = [D2*u1 | D2*u2 | D2*u3] = [du1/dx | du2/dy | du3/dy]
-   %              [D3*u1 | D3*u2 | D3*u3]   [du1/dz | du2/dz | du3/dz] 
+   % 3D:          [D0*u1 | D0*u2 | D0*u3]   [du1/dx | du2/dx | du3/dx] 
+   %    grad_ue = [D1*u1 | D1*u2 | D1*u3] = [du1/dx | du2/dy | du3/dy]
+   %              [D2*u1 | D2*u2 | D2*u3]   [du1/dz | du2/dz | du3/dz] 
     
     
     % Young's modulus 

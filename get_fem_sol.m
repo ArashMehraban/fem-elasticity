@@ -25,8 +25,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
     
     %get the unknown u guess vector and global to local mapping for each u
     [u, global_idx_map] = get_global_map(num_nodes,dir_bndry_nodes,sz_u_field);
-     dlta_u = u;
-     dlta_u(2) =1;
+    sz_u = size(u,1);
     
     solverType = solver{1};
     
@@ -41,27 +40,26 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
         tol = solver{4};
         global_res_tol = solver{5};
         
+        global_jac = get_global_jac(sz_u, global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf);            
+        [L,U] = lu(global_jac);
+        
         while(true)
             
-            % delme=get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
-%             
-             Je = get_global_jac(dlta_u, global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf);
-                    
             global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val, num_quadr_pts_in_1d, userf); 
      
             global_res_norm = norm(global_res,inf);
         
             %store the norm of global_res after each iteration
             gl_res_norm(end+gl_res_norm_iter) = global_res_norm;
-            gl_res_norm_iter = gl_res_norm_iter+1;
-        
+            gl_res_norm_iter = gl_res_norm_iter+1;        
         
             if(global_res_norm < global_res_tol || iter > max_iter_nw )
-                break;
-            end           
-        
-            jac_fun = @(dlta_u)get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
-            dlta_u= gmres(jac_fun, global_res,max_iter_gmres,tol);
+               break;
+            end   
+            
+            jv_fun = @(dlta_u)get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
+            precond_jac_fun =@(u)(U\(L\u));            
+            dlta_u= gmres(jv_fun, global_res,max_iter_gmres,tol,[],precond_jac_fun);
             u=u-dlta_u;
 
             iter=iter+1;

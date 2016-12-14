@@ -24,7 +24,7 @@ function global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val,num_q
      %get all dirichlet boundary node_sets
      dir_bndry_nodes = get_all_dir_ns(msh);
      
-     %get closure of u : a vector consisting the unknown and dirchlet boundary values
+     %get closure of u : a vector consisting the unknown and dirichlet boundary values
      u_closure =  get_closure_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);     
      
      %get the dimension of the problem
@@ -36,7 +36,7 @@ function global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val,num_q
 
      for i=1:num_elem
          
-         %get number of dof per unknown u_i per element
+         %get number of dof per element
          neldof = size(conn(i,:),2);
            
          %get corresponding vertex coordinates for each element 
