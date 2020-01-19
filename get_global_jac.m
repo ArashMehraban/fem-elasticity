@@ -41,7 +41,12 @@ function sparse_global_jac = get_global_jac(global_idx_map, msh,num_quadr_pts_in
      rcv = zeros(total_entry_end,3);
      
      
-     total_entry_end=0;        
+     total_entry_end=0; 
+       jac_e = zeros(size(B,2)*sz_u_field);
+         
+%          BI = kron(B,eye(sz_u_field));
+%          DI = kron(D,eye(sz_u_field));
+     
      for i=1:num_elem
          
          %get number of dof per unknown u_i per element
@@ -65,8 +70,8 @@ function sparse_global_jac = get_global_jac(global_idx_map, msh,num_quadr_pts_in
          % mapped quadrature points to reference coordinate system
          xe= B*element_vtx_coords;
         
-         jac_e = zeros(size(B,2)*sz_u_field);
-         
+%          jac_e = zeros(size(B,2)*sz_u_field);
+%          
          BI = kron(B,eye(sz_u_field));
          DI = kron(D,eye(sz_u_field));
          

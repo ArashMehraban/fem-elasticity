@@ -1,4 +1,4 @@
-function [u,global_res_norm,JACOB__] = get_fem_sol(origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val, num_quadr_pts_in_1d,userf,userdf,solver)
+function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val, num_quadr_pts_in_1d,userf,userdf,solver)
 %GET_FEM_SOL returns the solution to the PDE
 %
 %input :                msh: mesh object
@@ -40,6 +40,28 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(origConn, msh, sz_u_field, di
         global_res_tol = solver{5};
         
         
+       vtk_files = cell(steps,1);
+       for s=1:steps+1
+          vtk_files{s} = strcat(vtk_filename , num2str(s), '.vtk');    
+       end
+       zeroBd= dir_bndry_val;
+       for b=1:size(dir_bndry_val,1)
+           zeroBd{b} = 0* dir_bndry_val{b};
+       end
+       u_closure =  get_closure_u(u,dir_bndry_nodes,zeroBd,global_idx_map); 
+       %graph at no boundary applied
+       processVtk(vtk_files{1},origConn, msh,u_closure);
+       
+       dt = linspace(0,1,steps+1);
+        
+ for m=1:steps 
+     
+     stepBndry = dir_bndry_val;     
+     for b=1:size(dir_bndry_val,1)
+           stepBndry{b} = dt(m+1)* dir_bndry_val{b};
+     end
+     
+     
         tic
         global_jac = get_global_jac(global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf);            
         elapsedTime=toc;
@@ -55,7 +77,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(origConn, msh, sz_u_field, di
         
         while(true)
             
-            global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val, num_quadr_pts_in_1d, userf); 
+            global_res = get_global_res(u, global_idx_map, msh, stepBndry, num_quadr_pts_in_1d, userf); 
      
             global_res_norm = norm(global_res,inf);
         
@@ -76,9 +98,12 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(origConn, msh, sz_u_field, di
 
             iter=iter+1;
         end
-        u_closure =  get_closure_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);       
-        vtk_files = processVtk('3dElas.vtk',origConn, msh,u_closure);
-        
+        u_closure =  get_closure_u(u,dir_bndry_nodes,stepBndry,global_idx_map);       
+        processVtk(vtk_files{m+1},origConn, msh,u_closure);
+ end
+ for n=1:steps+1
+    movefile(vtk_files{n}, '3dElasVTKs');
+ end       
         if(size(solver,2) == 6)
             jac_flag = solver{6};
             if(jac_flag ==1)
@@ -101,13 +126,13 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(origConn, msh, sz_u_field, di
         
         while(true)
                             
-            fun = @(u)get_global_res(u, global_idx_map, msh, dir_bndry_val, num_quadr_pts_in_1d, userf);        
+            fun = @(u)get_global_res(u, global_idx_map, msh, stepBndry, num_quadr_pts_in_1d, userf);        
 
             options = optimoptions(@fsolve,'Algorithm','trust-region-reflective', 'TolX',tol);%,'Jacobian','on');
 
             [u,~,~,~,JACOB__] = fsolve(fun, u,options); 
 
-            global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val, num_quadr_pts_in_1d, userf);
+            global_res = get_global_res(u, global_idx_map, msh, stepBndry, num_quadr_pts_in_1d, userf);
 
             global_res_norm = norm(global_res,inf);
 
