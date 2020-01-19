@@ -15,7 +15,7 @@ function vtk_file = processVtk(vtk_file, conn, mesh,u)
   vtx = vtx +myu;
   fprintf(fid, '%f %f %f\n',vtx);
   fprintf(fid, '\nCELLS %d %d\n',mesh.num_elem,mesh.num_elem*(mesh.num_nodes_per_elem+1));
-  vecNumElems = uint8(mesh.num_nodes_per_elem * ones(mesh.num_elem,1));
+  vecNumElems = uint64(mesh.num_nodes_per_elem * ones(mesh.num_elem,1));
   theConn = [vecNumElems, conn-1];
   conny = theConn';
   conny = conny(:);
@@ -24,7 +24,6 @@ function vtk_file = processVtk(vtk_file, conn, mesh,u)
   ds = repmat(d,1,mesh.num_nodes_per_elem +1);
   r = strcat(ds,'\n');
   fprintf(fid, r,conny);
-  
   fprintf(fid, '\nCELL_TYPES %d\n',mesh.num_elem);
   if (mesh.num_dims == 2 && mesh.num_nodes_per_elem == 4)
       cellType = 9;
