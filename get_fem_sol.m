@@ -1,4 +1,4 @@
-function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val, num_quadr_pts_in_1d,userf,userdf,solver)
+function [u,global_res_norm,JACOB__] = get_fem_sol(origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val, num_quadr_pts_in_1d,userf,userdf,solver)
 %GET_FEM_SOL returns the solution to the PDE
 %
 %input :                msh: mesh object
@@ -25,8 +25,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
     
     %get the unknown u guess vector and global to local mapping for each u
     [u, global_idx_map] = get_global_map(num_nodes,dir_bndry_nodes,sz_u_field);
-    sz_u = size(u,1);
-    
+       
     solverType = solver{1};
     
     iter=1;
@@ -40,8 +39,19 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
         tol = solver{4};
         global_res_tol = solver{5};
         
-        global_jac = get_global_jac(sz_u, global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf);            
+        
+        tic
+        global_jac = get_global_jac(global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf);            
+        elapsedTime=toc;
+        msg = strcat('global Jacobian matrix assembly:', num2str(elapsedTime), ' seconds');
+        disp(msg);
+        
+        tic
         [L,U] = lu(global_jac);
+        elapsedTime = toc;
+        msg = strcat('LU of global Jacobian matrix: ', num2str(elapsedTime), ' seconds');
+        disp(msg);
+        
         
         while(true)
             
@@ -58,12 +68,17 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(msh, sz_u_field, dir_bndry_no
             end   
             
             jv_fun = @(dlta_u)get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
-            precond_jac_fun =@(u)(U\(L\u));            
+            precond_jac_fun =@(u)(U\(L\u));  
+            tic
             dlta_u= gmres(jv_fun, global_res,max_iter_gmres,tol,[],precond_jac_fun);
+            toc
             u=u-dlta_u;
 
             iter=iter+1;
         end
+        u_closure =  get_closure_u(u,dir_bndry_nodes,dir_bndry_val,global_idx_map);       
+        vtk_files = processVtk('3dElas.vtk',origConn, msh,u_closure);
+        
         if(size(solver,2) == 6)
             jac_flag = solver{6};
             if(jac_flag ==1)

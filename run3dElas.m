@@ -4,7 +4,7 @@ clc
 format short
 
 
-file_name_list{1} = {'cylinder8_110e_us', 'cylinder8_368e_us','cylinder8_1176e_us','cylinder8_1635e_us'};
+file_name_list{1} = {'cylinder8_110e_us', 'cylinder8_368e_us','cylinder8_1176e_us','cylinder8_1635e_us', 'cylinder8_4180e_us'};
 file_name_list{2} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_368e_us','cylinder27_630e_us'};
 
 folderName='mesh_Dirich_only';
@@ -31,7 +31,7 @@ for i=1:size(files,2)
     for j=1:size(files{i},2)        
         filenames = files{i}{j};
         ext = 'exo';
-        msh = get_mesh(filenames,ext,'lex');
+        [origConn, msh] = get_mesh(filenames,ext,'lex');
         elem_type = msh.num_nodes_per_elem;
         h(j) = get_hsz(msh);
         
@@ -55,7 +55,8 @@ for i=1:size(files,2)
         %========================================================================================%
     
         solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol};
-        fem_sol =  get_fem_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        fem_sol =  get_fem_sol(origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        disp('   ');
         error(j) = norm(exactSol - fem_sol)/norm(fem_sol); 
     end
     prb_title = '3D Elastisity';

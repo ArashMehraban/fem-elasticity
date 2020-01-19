@@ -1,4 +1,4 @@
-function sparse_global_jac = get_global_jac(sz_u, global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf)
+function sparse_global_jac = get_global_jac(global_idx_map, msh,num_quadr_pts_in_1d,sz_u_field, userdf)
 % GET_GLOBAL_JAC evaluates the actual Jacobian (consistent tangent)
 %  input:                sz_u: size of unknown vector 
 %       :      global_idx_map: global map of local u's
@@ -12,22 +12,36 @@ function sparse_global_jac = get_global_jac(sz_u, global_idx_map, msh,num_quadr_
 
      %get the number of elements
      num_elem = msh.num_elem; 
-     
+      
      %get connectivity matrix
      conn = msh.conn;
-     
+          
      %get vertex coordinates
      vtx_coords = msh.vtx_coords;
-     
-     sparse_global_jac= spalloc(sz_u,sz_u,sz_u*sz_u_field);
-     
+         
      dim = msh.num_dims;                                            
      %get Weights, Basis (B) functions and   [D0]
      %  their Derivatives:           D_hat = [D1]
      %                                       [D2] <-- if 3D
      [B, D_hat, W_hat] = get_shape(num_quadr_pts_in_1d, dim);
-  
-               
+
+     total_entry_end=0; 
+     for i=1:num_elem
+         temp=conn(i,:)';
+         neldof = size(conn(i,:),2);
+         k=1:neldof;
+         kk=temp(k);
+         in_glb = global_idx_map(kk,:);
+         kk =in_glb(in_glb>=0); 
+         if(size(kk,1) ~= 0)
+             total_entry_end = total_entry_end + size(kk,1)^2; 
+         end
+     end
+     %row colum, value storage per element for sparse matrix
+     rcv = zeros(total_entry_end,3);
+     
+     
+     total_entry_end=0;        
      for i=1:num_elem
          
          %get number of dof per unknown u_i per element
@@ -76,15 +90,25 @@ function sparse_global_jac = get_global_jac(sz_u, global_idx_map, msh,num_quadr_
              jac_e(:,idx(k)) = reshape(([B' D']*tmpf),[],1);
 
          end
-
          
-         % global (the action of) jacobian assembly 
+         % global Jacobian assembly 
          temp=conn(i,:)';
          k=1:neldof;
          kk=temp(k);
          in_glb = global_idx_map(kk,:);
-         kk =in_glb(in_glb>=0);   
-         %global jacobian  
-         sparse_global_jac(kk,kk)=sparse_global_jac(kk,kk)+jac_e(in_glb>=0, in_glb>=0); 
-     end
+         kk =in_glb(in_glb>=0);          
+         
+         if(size(kk,1) ~= 0)
+             ii = repmat(kk,1,size(kk,1))';
+             ii =ii(:);
+             jj = repmat(kk,1,size(kk,1));
+             jj = jj(:);
+             flatJac = jac_e(in_glb>=0, in_glb>=0);             
+             total_entry_start = total_entry_end +1;
+             total_entry_end = total_entry_end + size(ii,1);
+             rcv(total_entry_start:total_entry_end,:) = [ii,jj,flatJac(:)];
+         end
+         
+      end
+     sparse_global_jac = sparse(rcv(:,1),rcv(:,2),rcv(:,3));
 end
