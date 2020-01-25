@@ -1,6 +1,0 @@
-# vtk DataFile Version 2.0
-Poisson1.vtk
-ASCII
-DATASET UNSTRUCTURED_GRID
-
-POINTS 140 float

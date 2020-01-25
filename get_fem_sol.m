@@ -56,7 +56,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_dest_folder, vtk_filename
        end
        u_closure =  get_closure_u(u,dir_bndry_nodes,zeroBd,global_idx_map); 
        %graph at no boundary applied
-       processVtk(vtk_files{1},origConn, msh,u_closure,sz_u_field);
+       processVtk(vtk_files{1},origConn, msh,u_closure);
        
        dt = linspace(0,1,steps+1);
         
@@ -109,7 +109,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_dest_folder, vtk_filename
             iter=iter+1;
         end
         u_closure =  get_closure_u(u,dir_bndry_nodes,stepBndry,global_idx_map);       
-        processVtk(vtk_files{m+1},origConn, msh,u_closure,sz_u_field);
+        processVtk(vtk_files{m+1},origConn, msh,u_closure);
  end
  addpath(fullfile(pwd,vtk_dest_folder));
  for n=1:steps+1

@@ -1,20 +1,27 @@
-function vtk_file = processVtk(vtk_file, conn, mesh,u,sz_u_field)
+function vtk_file = processVtk(vtk_file, conn, mesh,u)
   fid = fopen(vtk_file, 'w');
   fprintf(fid, '# vtk DataFile Version 2.0\n');
   fprintf(fid, vtk_file);
   fprintf(fid, '\nASCII\n');
   fprintf(fid, 'DATASET UNSTRUCTURED_GRID\n\n');
-  fprintf(fid, 'POINTS %d float\n',mesh.num_nodes); 
+  fprintf(fid, 'POINTS %d float\n',mesh.num_nodes);
+  if(mesh.num_dims == 2)
+      u = [u,zeros(size(u,1),1)];
+  end
   myu = u';
   myu = myu(:);
-  myu = reshape(myu,[],sz_u_field);
+  myu = reshape(myu,[],3);
   
-  vtx = (mesh.vtx_coords)';
+  if(mesh.num_dims == 2)
+      vtx = [(mesh.vtx_coords),zeros(size(mesh.vtx_coords,1),1)]';
+  else
+      vtx = (mesh.vtx_coords)';
+  end
   vtx = vtx(:);
-  vtx = reshape(vtx,[],mesh.num_dims);  
+  vtx = reshape(vtx,[],3);  
   vtx = vtx +myu;
   f = '%f ';
-  fs = repmat(f,1,mesh.num_dims);
+  fs = repmat(f,1,3);
   fs = strcat(fs,'\n');
   fprintf(fid, fs ,vtx);
   fprintf(fid, '\nCELLS %d %d\n',mesh.num_elem,mesh.num_elem*(mesh.num_nodes_per_elem+1));
