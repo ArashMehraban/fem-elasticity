@@ -73,6 +73,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_dest_folder, vtk_filename
         elapsedTime=toc;
         msg = strcat('global Jacobian matrix assembly:', num2str(elapsedTime), ' seconds');
         disp(msg);
+        spy(global_jac);
         
 %         tic
 %         [L,U] = lu(global_jac);
