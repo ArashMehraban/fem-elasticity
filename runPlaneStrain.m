@@ -6,13 +6,13 @@ format short
 
 %'square9_1e_s',  'square4', 'square4_100e_s','square4_400e_s'; 'disk9_114e_us'
 
-% file_name_list{1} = {'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us', 'disk4_2598e_us' };
-% file_name_list{2} = {'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
-file_name_list{1} = {'disk4_169e_us'};
+ file_name_list{1} = {'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us', 'disk4_2598e_us' };
+ file_name_list{2} = {'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
+%file_name_list{1} = {'disk4_169e_us'};
 
 folderName='mesh_Dirich_only';
 
-steps = 9;
+steps = 1;
 vtk_filename='PlainStrain';
 if ~exist('PlainStrainVTKfiles', 'dir')
     mkdir('PlainStrainVTKfiles')
@@ -63,12 +63,25 @@ for i=1:size(files,2)
         %get constructed dir_bndry_vals and exac Solutions on remaining nodes 
         [dir_bndry_val, exactSol] = get_exact_sol(vtx_coords,dir_bndry_nodes, given_u);
         %========================================================================================%
-        
+        if(msh.num_dims == 2)
+           if(msh.num_nodes_per_elem == 4)
+                elemType = 'Quad4';
+            end
+            if(msh.num_nodes_per_elem == 9)
+                elemType = 'Quad9';
+            end       
+        end
+        elemTypeMsg = ['Mesh element type: ', elemType];
+        disp(elemTypeMsg);
+        numElmMsg = ['Number of elements in mesh: ',num2str(msh.num_elem)];
+        disp(numElmMsg);
         %solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol,jac_flag};
         solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol};
         fem_sol =  get_fem_sol(vtk_dest_folder, vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
-        disp('   ');
         error(j) = norm(exactSol - fem_sol)/norm(fem_sol); 
+        L2ErrMsg = strcat('L2 Error: ', num2str(error(j)));
+        disp(L2ErrMsg);
+        disp('   ');
     end
     prb_title = 'Plain Strain: 2D';
         if(elem_type == 4)

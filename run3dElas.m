@@ -67,14 +67,6 @@ for i=1:size(files,2)
                 elemType = 'Hex27';
             end      
         end
-        if(msh.num_dims == 2)
-           if(msh.num_nodes_per_elem == 4)
-                elemType = 'Quad4';
-            end
-            if(msh.num_nodes_per_elem == 9)
-                elemType = 'Quad9';
-            end       
-        end
         elemTypeMsg = ['Mesh element type: ', elemType];
         disp(elemTypeMsg);
         numElmMsg = ['Number of elements in mesh: ',num2str(msh.num_elem)];
