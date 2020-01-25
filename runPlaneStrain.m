@@ -6,10 +6,18 @@ format short
 
 %'square9_1e_s',  'square4', 'square4_100e_s','square4_400e_s'; 'disk9_114e_us'
 
-file_name_list{1} = {'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us', 'disk4_2598e_us' };
-file_name_list{2} = {'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
+% file_name_list{1} = {'disk4_169e_us', 'disk4_274e_us', 'disk4_641e_us', 'disk4_2598e_us' };
+% file_name_list{2} = {'disk9_169e_us', 'disk9_274e_us', 'disk9_641e_us','disk9_2598e_us' };
+file_name_list{1} = {'disk4_169e_us'};
 
 folderName='mesh_Dirich_only';
+
+steps = 9;
+vtk_filename='PlainStrain';
+if ~exist('PlainStrainVTKfiles', 'dir')
+    mkdir('PlainStrainVTKfiles')
+end
+vtk_dest_folder = 'PlainStrainVTKfiles';
 
 addpath(fullfile(pwd,folderName));
 
@@ -34,7 +42,7 @@ for i=1:size(files,2)
     for j=1:size(files{i},2)        
         filenames = files{i}{j};
         ext = 'exo';
-        msh = get_mesh(filenames,ext,'lex');
+        [origConn,msh] = get_mesh(filenames,ext,'lex');
         elem_type = msh.num_nodes_per_elem;
         h(j) = get_hsz(msh);
         
@@ -58,7 +66,8 @@ for i=1:size(files,2)
         
         %solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol,jac_flag};
         solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol};
-        fem_sol =  get_fem_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        fem_sol =  get_fem_sol(vtk_dest_folder, vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        disp('   ');
         error(j) = norm(exactSol - fem_sol)/norm(fem_sol); 
     end
     prb_title = 'Plain Strain: 2D';

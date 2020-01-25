@@ -11,6 +11,12 @@ file_name_list{3} = {'cylinder8_110e_us', 'cylinder8_368e_us', 'cylinder8_1176e_
 file_name_list{4} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_368e_us','cylinder27_630e_us','cylinder27_1428e_us' };
 
 folderName='mesh_Dirich_only';
+steps = 9;
+vtk_filename='Poisson';
+if ~exist('PoissonVTKfiles', 'dir')
+    mkdir('PoissonVTKfiles')
+end
+vtk_dest_folder = 'PoissonVTKfiles';
 
 addpath(fullfile(pwd,folderName));
 
@@ -36,7 +42,7 @@ for i=1:size(files,2)
     for j=1:size(files{i},2)        
         filenames = files{i}{j};
         ext = 'exo';
-        msh = get_mesh(filenames,ext,'lex');
+        [origConn, msh] =  get_mesh(filenames,ext,'lex');
         dims = msh.num_dims;
         elem_type = msh.num_nodes_per_elem;
         h(j) = get_hsz(msh);
@@ -63,7 +69,8 @@ for i=1:size(files,2)
         
         %solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol,jac_flag};
         solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol};
-        fem_sol =  get_fem_sol(msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        fem_sol =  get_fem_sol(vtk_dest_folder, vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        disp('   ');
         error(j) = norm(exactSol - fem_sol)/norm(fem_sol);
     end
     if(dims ==2)

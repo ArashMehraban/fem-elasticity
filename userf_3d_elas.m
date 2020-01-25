@@ -1,3 +1,4 @@
+% function [f0,f1] = userf_3d_elas(ue, grad_ue, xe,invJe,Du) 
 function [f0,f1] = userf_3d_elas(ue, grad_ue, xe) 
 %USERF_3d_ELAS provides weak form of the linear 3D Elastisity problem to solve 
 %
@@ -19,6 +20,20 @@ function [f0,f1] = userf_3d_elas(ue, grad_ue, xe)
    %    grad_ue = [D1*u1 | D1*u2 | D1*u3] = [du1/dx | du2/dy | du3/dy]
    %              [D2*u1 | D2*u2 | D2*u3]   [du1/dz | du2/dz | du3/dz] 
     
+   
+%    dXdx = [invJe(1,1), invJe(1,2),invJe(1,3);
+%            invJe(1,4),invJe(1,5),invJe(1,6);
+%            invJe(1,7),invJe(1,8),invJe(1,9)];
+%        du1 = [Du(1,:);Du(9,:);Du(17,:)];
+%        
+%        g1 = [grad_ue(1,:);grad_ue(9,:);grad_ue(17,:)];
+%        
+%        diff = dXdx*du1 - g1    <-- This proves the opera D (not D_hat) is
+%        not required. Also proves the we have computed gradu^T since gradu
+%        has to be du1*dXdx. This proves in get_shape D_hat is comming out
+%        as transpose of what D_hat should be. Ths proves that x in [x, w] =
+%        get_quadrature(num_quadr_pts_in_1d); must be transposed
+%        
     
     % Young's modulus 
     E = 1;%2e11;

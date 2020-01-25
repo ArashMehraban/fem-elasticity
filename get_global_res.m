@@ -52,6 +52,8 @@ function global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val,num_q
          % 3D: [D1] dN/dx
          %   D=[D2] dN/dy
          %     [D3] dN/dz
+         
+%          [dets, D, invJe] = get_elem_dirv(element_vtx_coords, D_hat, dim);
          [dets, D] = get_elem_dirv(element_vtx_coords, D_hat, dim);
          
          %get Gauss Weights for the current element
@@ -74,7 +76,8 @@ function global_res = get_global_res(u, global_idx_map, msh, dir_bndry_val,num_q
          % vertex coordinates mapped to reference coordinate system
          xe= B*element_vtx_coords;
          
-        
+%          Du = D_hat*elem_u;
+%          [f0,f1] = userf(ue, grad_ue, xe,invJe,Du); 
          [f0,f1] = userf(ue, grad_ue, xe); 
 
          % overwirte f0 by element-wise multiplication of its values by W

@@ -4,13 +4,19 @@ clc
 format short
 
 
-% file_name_list{1} = {'cylinder8_110e_us', 'cylinder8_368e_us','cylinder8_1176e_us','cylinder8_1635e_us', 'cylinder8_4180e_us'};
+file_name_list{1} = {'cylinder8_110e_us', 'cylinder8_368e_us','cylinder8_1176e_us','cylinder8_1635e_us', 'cylinder8_4180e_us'};
 % file_name_list{2} = {'cylinder27_64e_us', 'cylinder27_110e_us', 'cylinder27_368e_us','cylinder27_630e_us'};
-file_name_list{1} = {'cylinder8_4180e_us'};
- file_name_list{1} = {'cylinder8_110e_us'};
+% file_name_list{1} = {'cylinder8_4180e_us'};
+%   file_name_list{1} = {'cylinder8_110e_us'};
+%  file_name_list{1} = {'cube_1e_6ns_s'};
+% file_name_list{1} = {'cylinder27_1428e_us'};
 folderName='mesh_Dirich_only';
-steps = 900;
+steps = 1;
 vtk_filename='3dElas';
+if ~exist('3dElasVTKs', 'dir')
+    mkdir('3dElasVTKs')
+end
+vtk_dest_folder = '3dElasVTKs';
 addpath(fullfile(pwd,folderName));
 
 files = cell(file_name_list);
@@ -57,13 +63,15 @@ for i=1:size(files,2)
         %========================================================================================%
     
         solver = {'gmres', max_iter_gmres,max_iter_nw,tol,global_res_tol};
-        fem_sol =  get_fem_sol(vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        fem_sol =  get_fem_sol(vtk_dest_folder, vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val,num_quadr_pts_in_1d(i),userf{i},userdf{i},solver);
+        error(j) = norm(exactSol - fem_sol)/norm(fem_sol);
+        L2ErrMsg = strcat('L2 Error: ', num2str(error(j)));
+        disp(L2ErrMsg);
         disp('   ');
-        error(j) = norm(exactSol - fem_sol)/norm(fem_sol); 
     end
     prb_title = '3D Elastisity';
         if(elem_type == 8)
-             leg_enry_1 = 'FEM-HEX8';
+            leg_enry_1 = 'FEM-HEX8';
             lglg_factor_1 = 0.001;
             lglg_pwr_1 = h;
             lglg_factor_2 = 0.1;

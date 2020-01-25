@@ -1,4 +1,4 @@
-function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val, num_quadr_pts_in_1d,userf,userdf,solver)
+function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_dest_folder, vtk_filename, steps, origConn, msh, sz_u_field, dir_bndry_nodes, dir_bndry_val, num_quadr_pts_in_1d,userf,userdf,solver)
 %GET_FEM_SOL returns the solution to the PDE
 %
 %input :                msh: mesh object
@@ -34,7 +34,13 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_filename, steps, origConn
        
     if(strcmp(solverType,'gmres'))
         
-        max_iter_gmres = solver{2};
+        if(solver{2}>size(u,1))
+            max_iter_gmres = size(u,1);            
+            gmresMsg = strcat('gmres_max_iter was reduced to row size of unknown matrix:', num2str(size(u,1)));
+            warning(gmresMsg);
+        else
+            max_iter_gmres = solver{2};
+        end
         max_iter_nw = solver{3};
         tol = solver{4};
         global_res_tol = solver{5};
@@ -50,7 +56,7 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_filename, steps, origConn
        end
        u_closure =  get_closure_u(u,dir_bndry_nodes,zeroBd,global_idx_map); 
        %graph at no boundary applied
-       processVtk(vtk_files{1},origConn, msh,u_closure);
+       processVtk(vtk_files{1},origConn, msh,u_closure,sz_u_field);
        
        dt = linspace(0,1,steps+1);
         
@@ -68,11 +74,11 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_filename, steps, origConn
         msg = strcat('global Jacobian matrix assembly:', num2str(elapsedTime), ' seconds');
         disp(msg);
         
-        tic
-        [L,U] = lu(global_jac);
-        elapsedTime = toc;
-        msg = strcat('LU of global Jacobian matrix: ', num2str(elapsedTime), ' seconds');
-        disp(msg);
+%         tic
+%         [L,U] = lu(global_jac);
+%         elapsedTime = toc;
+%         msg = strcat('LU of global Jacobian matrix: ', num2str(elapsedTime), ' seconds');
+%         disp(msg);
         
         
         while(true)
@@ -90,20 +96,27 @@ function [u,global_res_norm,JACOB__] = get_fem_sol(vtk_filename, steps, origConn
             end   
             
             jv_fun = @(dlta_u)get_global_Jv(dlta_u, global_idx_map, msh, num_quadr_pts_in_1d, userdf);
-            precond_jac_fun =@(u)(U\(L\u));  
+            %precond_jac_fun =@(u)(U\(L\u));  
+            precond_jac_fun = @(u)(global_jac\u);
             tic
             dlta_u= gmres(jv_fun, global_res,max_iter_gmres,tol,[],precond_jac_fun);
-            toc
+            elapsedTime = toc;
+            msg = strcat('gmres solve time: ', num2str(elapsedTime), ' seconds');
+            disp(msg);
             u=u-dlta_u;
-
+            
             iter=iter+1;
         end
         u_closure =  get_closure_u(u,dir_bndry_nodes,stepBndry,global_idx_map);       
-        processVtk(vtk_files{m+1},origConn, msh,u_closure);
+        processVtk(vtk_files{m+1},origConn, msh,u_closure,sz_u_field);
  end
+ addpath(fullfile(pwd,vtk_dest_folder));
  for n=1:steps+1
-    movefile(vtk_files{n}, '3dElasVTKs');
- end       
+    movefile(vtk_files{n}, vtk_dest_folder);
+ end
+ rmpath(fullfile(pwd,vtk_dest_folder));
+ 
+ 
         if(size(solver,2) == 6)
             jac_flag = solver{6};
             if(jac_flag ==1)

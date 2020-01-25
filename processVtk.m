@@ -1,4 +1,4 @@
-function vtk_file = processVtk(vtk_file, conn, mesh,u)
+function vtk_file = processVtk(vtk_file, conn, mesh,u,sz_u_field)
   fid = fopen(vtk_file, 'w');
   fprintf(fid, '# vtk DataFile Version 2.0\n');
   fprintf(fid, vtk_file);
@@ -7,13 +7,16 @@ function vtk_file = processVtk(vtk_file, conn, mesh,u)
   fprintf(fid, 'POINTS %d float\n',mesh.num_nodes); 
   myu = u';
   myu = myu(:);
-  myu = reshape(myu,[],mesh.num_dims);
+  myu = reshape(myu,[],sz_u_field);
   
   vtx = (mesh.vtx_coords)';
   vtx = vtx(:);
   vtx = reshape(vtx,[],mesh.num_dims);  
   vtx = vtx +myu;
-  fprintf(fid, '%f %f %f\n',vtx);
+  f = '%f ';
+  fs = repmat(f,1,mesh.num_dims);
+  fs = strcat(fs,'\n');
+  fprintf(fid, fs ,vtx);
   fprintf(fid, '\nCELLS %d %d\n',mesh.num_elem,mesh.num_elem*(mesh.num_nodes_per_elem+1));
   vecNumElems = uint64(mesh.num_nodes_per_elem * ones(mesh.num_elem,1));
   theConn = [vecNumElems, conn-1];
@@ -32,7 +35,7 @@ function vtk_file = processVtk(vtk_file, conn, mesh,u)
   elseif (mesh.num_dims == 3 && mesh.num_nodes_per_elem == 8)
       cellType = 12;
   elseif (mesh.num_dims == 3 && mesh.num_nodes_per_elem == 27)
-      cellType = 12;
+      cellType = 25;
   else
       disp('I do NOT know this mesh to prepare for a vtk file');
   end
@@ -42,7 +45,7 @@ function vtk_file = processVtk(vtk_file, conn, mesh,u)
   
   fprintf(fid, '\nPOINT_DATA %d\n',mesh.num_nodes);
   fprintf(fid,'VECTORS displacement float\n');
-  fprintf(fid,'%f %f %f\n', myu);
+  fprintf(fid,fs, myu);
   
   fclose(fid);
 
